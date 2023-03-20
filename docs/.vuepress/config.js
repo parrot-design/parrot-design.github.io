@@ -50,6 +50,20 @@ module.exports = {
               "interview/vue/8",
             ],
           },
+          {
+            title: "Css面试题",
+            collapsable: true,
+            children: [
+              "interview/css/1",
+              "interview/css/2",
+              "interview/css/3",
+              "interview/css/4",
+              "interview/css/5",
+              "interview/css/6",
+              "interview/css/7",
+              "interview/css/8",
+            ],
+          },
         ],
       },
       {
