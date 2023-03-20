@@ -51,7 +51,7 @@ module.exports = {
             ],
           },
           {
-            title: "Css面试题",
+            title: "css面试题",
             collapsable: true,
             children: [
               "interview/css/1",
@@ -59,9 +59,6 @@ module.exports = {
               "interview/css/3",
               "interview/css/4",
               "interview/css/5",
-              "interview/css/6",
-              "interview/css/7",
-              "interview/css/8",
             ],
           },
         ],
