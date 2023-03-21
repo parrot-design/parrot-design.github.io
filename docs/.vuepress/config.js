@@ -23,6 +23,7 @@ module.exports = {
               "interview/js/event",
               "interview/js/this",
               "interview/js/code",
+              "interview/js/1",
             ],
           },
           {
@@ -48,6 +49,12 @@ module.exports = {
               "interview/vue/6",
               "interview/vue/7",
               "interview/vue/8",
+              "interview/vue/9",
+              "interview/vue/10",
+              "interview/vue/11",
+              "interview/vue/12",
+              "interview/vue/13",
+              "interview/vue/14",
             ],
           },
           {
@@ -70,7 +77,7 @@ module.exports = {
           {
             title: "ES6",
             collapsable: true,
-            children: ["jsbase/es6/Map","jsbase/es6/Set"],
+            children: ["jsbase/es6/Map", "jsbase/es6/Set"],
           },
         ],
       },
