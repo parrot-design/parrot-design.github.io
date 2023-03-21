@@ -70,7 +70,7 @@ module.exports = {
           {
             title: "ES6",
             collapsable: true,
-            children: ["jsbase/es6/Map"],
+            children: ["jsbase/es6/Map","jsbase/es6/Set"],
           },
         ],
       },
@@ -97,6 +97,11 @@ module.exports = {
             title: "链表",
             collapsable: true,
             children: ["leetcode/linklist/21", "leetcode/linklist/83"],
+          },
+          {
+            title: "堆",
+            collapsable: true,
+            children: ["leetcode/heap/1046"],
           },
         ],
       },
