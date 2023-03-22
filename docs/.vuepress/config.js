@@ -58,14 +58,34 @@ module.exports = {
             ],
           },
           {
+            title: "vue3面试题",
+            collapsable: true,
+            children: [
+              "interview/vue3/1", 
+              "interview/vue3/2", 
+              "interview/vue3/3", 
+            ],
+          },
+          {
             title: "css面试题",
             collapsable: true,
             children: [
               "interview/css/1",
               "interview/css/2",
               "interview/css/3",
-              "interview/css/4",
-              "interview/css/5",
+              // "interview/css/4",
+              // "interview/css/5",
+            ],
+          },
+          {
+            title: "ts面试题",
+            collapsable: true,
+            children: [
+              "interview/ts/1",
+              // "interview/ts/2",
+              // "interview/ts/3",
+              // "interview/ts/4",
+              // "interview/ts/5",
             ],
           },
         ],
@@ -112,6 +132,17 @@ module.exports = {
           },
         ],
       },
+      {
+        title: "随身小记",
+        collapsable: true,
+        children: [
+          {
+            title: "git",
+            collapsable: true,
+            children: ["note/git/1"],
+          }
+        ]
+      }
     ],
   },
 };
