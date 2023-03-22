@@ -61,9 +61,11 @@ module.exports = {
             title: "vue3面试题",
             collapsable: true,
             children: [
-              "interview/vue3/1", 
-              "interview/vue3/2", 
-              "interview/vue3/3", 
+              "interview/vue3/1",
+              "interview/vue3/2",
+              "interview/vue3/3",
+              "interview/vue3/4",
+              "interview/vue3/5",
             ],
           },
           {
@@ -82,10 +84,25 @@ module.exports = {
             collapsable: true,
             children: [
               "interview/ts/1",
-              // "interview/ts/2",
+              "interview/ts/2",
               // "interview/ts/3",
               // "interview/ts/4",
               // "interview/ts/5",
+            ],
+          },
+          {
+            title: "wcc面试题",
+            collapsable: true,
+            children: [
+              "interview/wcc/1",
+              "interview/wcc/2",
+              "interview/wcc/3",
+              "interview/wcc/4",
+              "interview/wcc/5",
+              "interview/wcc/6",
+              "interview/wcc/7",
+              "interview/wcc/8",
+              "interview/wcc/9",
             ],
           },
         ],
@@ -140,9 +157,9 @@ module.exports = {
             title: "git",
             collapsable: true,
             children: ["note/git/1"],
-          }
-        ]
-      }
+          },
+        ],
+      },
     ],
   },
 };
