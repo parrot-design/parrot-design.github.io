@@ -26,17 +26,7 @@ module.exports = {
               "interview/js/1",
             ],
           },
-          {
-            title: "ql面试题",
-            collapsable: true,
-            children: [
-              "interview/ql/1",
-              "interview/ql/2",
-              "interview/ql/3",
-              "interview/ql/4",
-              "interview/ql/5",
-            ],
-          },
+          
           {
             title: "vue面试题",
             collapsable: true,
@@ -91,6 +81,21 @@ module.exports = {
             ],
           },
           {
+            title: "webpack面试题",
+            collapsable: true,
+            children: [
+              "interview/webpack/1",
+              // "interview/webpack/2",
+              // "interview/webpack/3",
+              // "interview/webpack/4",
+              // "interview/webpack/5",
+              // "interview/webpack/6",
+              // "interview/webpack/7",
+              // "interview/webpack/8",
+              // "interview/webpack/9",
+            ],
+          },
+          {
             title: "wcc面试题",
             collapsable: true,
             children: [
@@ -103,6 +108,17 @@ module.exports = {
               "interview/wcc/7",
               "interview/wcc/8",
               "interview/wcc/9",
+            ],
+          },
+          {
+            title: "ql面试题",
+            collapsable: true,
+            children: [
+              "interview/ql/1",
+              "interview/ql/2",
+              "interview/ql/3",
+              "interview/ql/4",
+              "interview/ql/5",
             ],
           },
         ],
