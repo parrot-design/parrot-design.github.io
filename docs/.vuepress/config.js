@@ -26,7 +26,7 @@ module.exports = {
               "interview/js/1",
             ],
           },
-          
+
           {
             title: "vue面试题",
             collapsable: true,
@@ -91,6 +91,22 @@ module.exports = {
               // "interview/webpack/5",
               // "interview/webpack/6",
               // "interview/webpack/7",
+              // "interview/webpack/8",
+              // "interview/webpack/9",
+            ],
+          },
+          {
+            title: "微信小程序面试题",
+            collapsable: true,
+            children: [
+              "interview/webapp/1",
+              "interview/webapp/2",
+              "interview/webapp/3",
+              "interview/webapp/4",
+              "interview/webapp/5",
+              "interview/webapp/6",
+              "interview/webapp/7",
+              "interview/webapp/8",
               // "interview/webpack/8",
               // "interview/webpack/9",
             ],
