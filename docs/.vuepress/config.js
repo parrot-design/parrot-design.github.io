@@ -208,6 +208,15 @@ module.exports = {
           },
         ],
       },
+      {
+        title: "手写JS代码系列",
+        collapsable:true,
+        children:[ 
+          "js_code/reduce",
+          "js_code/bubble-sort",
+          "js_code/call",
+        ]
+      }
     ],
   },
 };
