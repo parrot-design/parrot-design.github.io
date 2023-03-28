@@ -31,6 +31,6 @@ git push origin main
 
 black_green "4.已执行gitpush命令将文件从本地分支提交到远程分支[*]" 
 
-git subtree push --prefix docs/.vuepress/dist origin gh-pages
+# git subtree push --prefix docs/.vuepress/dist origin gh-pages
 
-black_green "5.已执行gitsubtree命令将docs从本地分支提交到远程分支[*]" 
+# black_green "5.已执行gitsubtree命令将docs从本地分支提交到远程分支[*]" 
