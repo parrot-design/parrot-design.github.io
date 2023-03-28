@@ -6,3 +6,31 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+.App{
+  width: 100%;
+  height: 800px;
+  font-size:20px;
+  border:10px solid red;
+  padding:50px;
+  box-sizing: border-box;
+}
+.item1{
+  width: 100%;
+  height: 200px;
+  font-size:20px;
+  border:5px solid blue;
+  margin-bottom:10px;
+}
+.item2{
+  width: 100%;
+  height: 200px;
+  font-size:20px;
+  border:5px solid salmon;
+}
+.item3{
+  width: 100%;
+  height: 200px;
+  font-size:20px;
+  border:5px solid rgb(81, 42, 38);
+}

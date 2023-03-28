@@ -206,6 +206,11 @@ module.exports = {
             collapsable: true,
             children: ["note/git/1"],
           },
+          {
+            title: "npm",
+            collapsable: true,
+            children: ["note/npm/1"],
+          },
         ],
       },
       {
@@ -217,6 +222,8 @@ module.exports = {
           "js_code/call",
           "js_code/bind",
           "js_code/apply",
+          "js_code/debounce",
+          "js_code/throttle",
         ],
       },
     ],
