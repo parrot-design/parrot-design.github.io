@@ -1,18 +1,21 @@
-import React from 'react';  
-import Item1 from './Item1';
-import Item2 from './Item2';
-import Item3 from './Item3';
-import "./test-redux";
+import React, { useCallback, useState } from "react"; 
+import TableQuery from "./TableQuery";
+import List from "./List";
+import { Context } from "./context";
 
 function App() {
+  const [flag, setFlag] = useState(false); 
+
+  const setFlagApp=useCallback(()=>setFlag(!flag),[flag,setFlag])
+
   return (
-    <div className="App"> 
-      App模块
-      <Item1 />
-      <Item2 />
-      <Item3 />
-    </div>
+    <Context.Provider value={{ flag,setFlag:setFlagApp }}>
+      <div className="App"> 
+        <TableQuery />
+        <List />
+      </div>
+    </Context.Provider>
   );
-}
+}/*  */
 
 export default App;

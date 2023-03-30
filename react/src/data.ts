@@ -1,0 +1,1 @@
+export const data=(flag:boolean)=>[{a:1,b:flag?'2':'3'}]/*  */
