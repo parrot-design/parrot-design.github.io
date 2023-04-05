@@ -6,10 +6,8 @@ module.exports = {
     displayAllHeaders: false,
     sidebar: [
       {
-        title:"React源码解析",
-        children:[
-          "react-core/1"
-        ]
+        title: "React源码解析",
+        children: ["react-core/1"],
       },
       {
         title: "面试题",
@@ -67,9 +65,7 @@ module.exports = {
           {
             title: "vue & react面试题",
             collapsable: true,
-            children: [
-              "interview/vue & react/1"
-            ],
+            children: ["interview/vue & react/1"],
           },
           {
             title: "css面试题",
@@ -228,6 +224,11 @@ module.exports = {
             title: "yarn",
             collapsable: true,
             children: ["note/yarn/1"],
+          },
+          {
+            title: "ts",
+            collapsable: true,
+            children: ["note/ts/1"],
           },
         ],
       },
