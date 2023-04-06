@@ -229,6 +229,16 @@ module.exports = {
             collapsable: true,
             children: ["note/yarn/1"],
           },
+          {
+            title: "node",
+            collapsable: true,
+            children: ["note/node/1"],
+          },
+          {
+            title: "nvm",
+            collapsable: true,
+            children: ["note/nvm/1"],
+          },
         ],
       },
       {
