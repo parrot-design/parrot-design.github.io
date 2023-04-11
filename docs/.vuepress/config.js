@@ -10,6 +10,18 @@ module.exports = {
         children: ["react-core/1"],
       },
       {
+        title: "Angular学习",
+        children: ["angular/1","angular/2","angular/3"],
+      },
+      {
+        title: "HMR原理",
+        children: ["hmr/1"],
+      },
+      {
+        title: "webpack原理",
+        children: ["webpack/1"],
+      },
+      {
         title: "面试题",
         collapsable: true,
         children: [
@@ -213,7 +225,7 @@ module.exports = {
           {
             title: "git",
             collapsable: true,
-            children: ["note/git/1"],
+            children: ["note/git/1","note/git/2"],
           },
           {
             title: "npm",
@@ -240,6 +252,26 @@ module.exports = {
             collapsable: true,
             children: ["note/ts/1"],
           },
+          {
+            title: "n",
+            collapsable: true,
+            children: ["note/n/1"],
+          },
+          {
+            title: "package.json",
+            collapsable: true,
+            children: ["note/package.json/1","note/package.json/2","note/package.json/3","note/package.json/4"],
+          },
+          {
+            title: "npm",
+            collapsable: true,
+            children: ["note/npm/1","note/npm/2","note/npm/3","note/npm/4"],
+          },
+          {
+            title: "node_module",
+            collapsable: true,
+            children: ["note/node_module/1"],
+          }
         ],
       },
       {
