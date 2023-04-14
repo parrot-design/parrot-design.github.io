@@ -2,7 +2,8 @@
     "scripts": {
         "start": "vuepress dev docs",
         "build": "vuepress build docs",
-        "deploy": "sh deploy.sh"
+        "deploy": "sh deploy.sh",
+        "eventemitter":"node ./eventemitter/index"
     },
     "dependencies": {
         "vuepress": "^1.9.9"
