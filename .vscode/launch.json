@@ -5,6 +5,20 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name":"node调试webpack",
+            "request":"launch",
+            "runtimeArgs": [
+                "run-script",
+                "build"
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "localRoot": "${workspaceFolder}/webpack",
+        },
+        {
             "name":"node调试vue2 build",
             "request":"launch",
             "runtimeArgs": [
