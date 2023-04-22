@@ -5,6 +5,15 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name":"node调试eventemitter",
+            "request":"launch", 
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node",
+            "program": "${workspaceFolder}/eventemitter/index.js",
+        },
+        {
             "name":"node调试webpack",
             "request":"launch",
             "runtimeArgs": [

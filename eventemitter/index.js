@@ -11,6 +11,9 @@ eventEmitter.on("notice",()=>{
 eventEmitter.on("notice",()=>{
     console.log("notice3被触发了");
 });
+eventEmitter.addListener('notice',()=>{
+    console.log("notice4被触发了")
+})
 
 setTimeout(()=>{
     eventEmitter.emit("notice")
