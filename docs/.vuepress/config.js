@@ -6,12 +6,16 @@ module.exports = {
     displayAllHeaders: false,
     sidebar: [
       {
+        title: "Node依赖包管理",
+        children: ["node-package/1"],
+      },
+      {
         title: "React源码解析",
         children: ["react-core/1"],
       },
       {
         title: "Angular学习",
-        children: ["angular/1","angular/2","angular/3"],
+        children: ["angular/1", "angular/2", "angular/3"],
       },
       {
         title: "HMR原理",
@@ -225,7 +229,7 @@ module.exports = {
           {
             title: "git",
             collapsable: true,
-            children: ["note/git/1","note/git/2"],
+            children: ["note/git/1", "note/git/2"],
           },
           {
             title: "npm",
@@ -245,7 +249,7 @@ module.exports = {
           {
             title: "nvm",
             collapsable: true,
-            children: ["note/nvm/1"]
+            children: ["note/nvm/1"],
           },
           {
             title: "ts",
@@ -260,18 +264,23 @@ module.exports = {
           {
             title: "package.json",
             collapsable: true,
-            children: ["note/package.json/1","note/package.json/2","note/package.json/3","note/package.json/4"],
+            children: [
+              "note/package.json/1",
+              "note/package.json/2",
+              "note/package.json/3",
+              "note/package.json/4",
+            ],
           },
           {
             title: "npm",
             collapsable: true,
-            children: ["note/npm/1","note/npm/2","note/npm/3","note/npm/4"],
+            children: ["note/npm/1", "note/npm/2", "note/npm/3", "note/npm/4"],
           },
           {
             title: "node_module",
             collapsable: true,
             children: ["note/node_module/1"],
-          }
+          },
         ],
       },
       {

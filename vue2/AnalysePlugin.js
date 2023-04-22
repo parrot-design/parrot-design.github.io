@@ -3,7 +3,9 @@ class AnalysePlugin{
 
     }
     apply(compiler){
-        console.log("==compiler==>",compiler);
+        compiler.hooks.environment.tap('myPlugin',(params)=>{
+            console.log("environment环境")
+        }) 
     }
 }
 
