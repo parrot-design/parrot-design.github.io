@@ -6,6 +6,14 @@ module.exports = {
     displayAllHeaders: false,
     sidebar: [
       {
+        title: "chrome",
+        children: ["chrome/1"],
+      },
+       {
+        title: "shell命令",
+        children: ["shell/1"],
+      },
+      {
         title: "Node依赖包管理",
         children: ["node-package/1"],
       },
