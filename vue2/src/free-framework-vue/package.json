@@ -1,0 +1,39 @@
+{
+  "_from": "free-framework-vue",
+  "_id": "free-framework-vue@1.2.64",
+  "_inBundle": false,
+  "_integrity": "sha512-GXZtlmTIrGho0+mVXRlrzF4dUJAlSY/tVuGS0hNG+gBbX2AGEVsggZ51tfI/wnDmqjQGpIZEc208H+wfeQ9N9g==",
+  "_location": "/free-framework-vue",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "free-framework-vue",
+    "name": "free-framework-vue",
+    "escapedName": "free-framework-vue",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "https://registry.npmmirror.com/free-framework-vue/-/free-framework-vue-1.2.64.tgz",
+  "_shasum": "2a1713c976f8768b46af2353b83df32d17512c65",
+  "_spec": "free-framework-vue",
+  "_where": "/Users/wjb/Desktop/parrot-design.github.io/vue2",
+  "author": "",
+  "bundleDependencies": false,
+  "dependencies": {},
+  "deprecated": false,
+  "description": "",
+  "devDependencies": {},
+  "license": "ISC",
+  "main": "index.js",
+  "name": "free-framework-vue",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.2.64"
+}

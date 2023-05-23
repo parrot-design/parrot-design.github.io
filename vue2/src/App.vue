@@ -1,27 +1,24 @@
 <template>
-  <div id="app"> 
-    <hello-world />
-  </div>
+  <free-g 
+    :settings="settings"
+  />
 </template>
 
-<script>
-import HelloWorld from './components/HelloWorld.vue'
-
+<script> 
+import settings from "./App";
 export default {
   name: 'App',
   components: {
-    HelloWorld
+  },
+  data(){
+    return {
+      settings
+    }
   }
 }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="scss">
+//使用@import url会被识别成css
+@import "./App.scss";
 </style>

@@ -1,0 +1,11 @@
+{
+    "rules":{
+        "no-unused-vars":"off",
+        "no-undef":"off",
+        "no-empty":"off",
+        "no-prototype-builtins":"off",
+        "no-redeclare":"off",
+        "no-dupe-keys":"off"
+    },
+    "extends": ["plugin:vue/recommended", "eslint:recommended"],
+}
