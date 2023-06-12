@@ -6,6 +6,7 @@
 
 <script> 
 import settings from "./App";
+import "reactivity"
 export default {
   name: 'App',
   components: {

@@ -11,8 +11,12 @@
       "prefix": "app",
       "architect": {
         "build": {
-          "builder": "@angular-devkit/build-angular:browser",
+          "builder": "@angular-builders/custom-webpack:browser",
           "options": {
+            "customWebpackConfig": {
+              "path": "./custom-webpack.config.js",
+              "replaceDuplicatePlugins": true
+            },
             "outputPath": "dist/angular-demo",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -57,13 +61,16 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular-devkit/build-angular:dev-server",
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options":{
+            "browserTarget":"angular-demo:build"
+          },
           "configurations": {
             "production": {
               "browserTarget": "angular-demo:build:production"
             },
-            "development": {
-              "browserTarget": "angular-demo:build:development"
+            "development":{
+              "browserTarget":"angular-demo:build"
             }
           },
           "defaultConfiguration": "development"
@@ -96,6 +103,9 @@
     }
   },
   "cli": {
-    "analytics": "17feab4b-05ec-44b9-884c-48ee6efad091"
+    "analytics": "17feab4b-05ec-44b9-884c-48ee6efad091",
+    "cache":{
+      "enabled":false
+    }
   }
 }

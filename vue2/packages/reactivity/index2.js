@@ -1,0 +1,1 @@
+console.log("我是在package.json中的main字段下指定的");
