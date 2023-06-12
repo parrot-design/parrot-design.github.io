@@ -18,3 +18,9 @@ https://runebook.dev/zh/docs/angular/cli/cache
 3. module:定义 npm 包的 ESM 规范的入口文件，browser 环境和 node 环境均可使用
 4. browser:定义 npm 包在 browser 环境下的入口文件
 5. exports优先级最高 意味着 你在package.json存在main module exports等字段 优先引入exports对应的入口文件。
+
+# 3.自定义webpack配置
+
+1. 安装指定插件配置webpack
+2. 修改cache=false来去除缓存  否则修改node_module无效
+3. 修改mode=develop来控制控制台的打印
