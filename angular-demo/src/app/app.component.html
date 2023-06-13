@@ -1,1 +1,12 @@
-<div>{{title}}</div>
+<div class="container">
+    <div class="container-item" *ngFor="let item of data">
+        <div class="container-item-left">
+            <div class="title">{{item.title}}</div>
+        </div>
+        <div class="container-item-right">
+            <div class="item" *ngFor="let listItem of item.list">
+                {{listItem}}
+            </div>
+        </div>
+    </div>
+</div>

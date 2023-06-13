@@ -10,7 +10,7 @@
     "postinstall": "npx patch-package"
   },
   "workspaces": [
-    "packages/*"
+    "@angular/core"
   ],
   "private": true,
   "dependencies": {

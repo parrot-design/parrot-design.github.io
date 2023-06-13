@@ -1,0 +1,27 @@
+.container{
+    width:500px;
+    height:300px;
+    border:1px solid red;
+    overflow: auto;
+}
+.title{
+    padding:10px;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+}
+
+.container-item{
+    display: flex;
+    border-bottom:1px solid red;
+}
+.container-item-left{
+    flex:4;
+    border-right:1px solid red;
+}
+.container-item-right{
+    flex:6;
+}
+.item{
+    line-height: 60px;
+}
