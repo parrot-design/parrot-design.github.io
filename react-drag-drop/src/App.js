@@ -49,6 +49,17 @@ export default class App extends Component {
     this.onDragEnd = this.onDragEnd.bind(this);
   }
 
+  componentDidMount(){
+    window.addEventListener('keydown',()=>{console.log("keydown")})
+    window.addEventListener('mousedown',()=>{console.log("mousedown")})
+    window.addEventListener('mouseup',()=>{console.log("mouseup")})
+    // window.addEventListener('mousemove',()=>{console.log("mousemove")})
+    window.addEventListener('mouseover',()=>{console.log("mouseover")})
+    window.addEventListener('touchstart',()=>{console.log("touchstart")})
+    window.addEventListener('touchmove',()=>{console.log("touchmove")})
+    window.addEventListener('touchend',()=>{console.log("touchend")}) 
+  }
+
   onDragEnd(result) {
     if (!result.destination) {
       return;
@@ -81,7 +92,7 @@ export default class App extends Component {
                 {this.state.items.map((item, index) => (
                   <Draggable key={item.id} draggableId={item.id} index={index}>
                     {(provided, snapshot) => {
-                      console.log("==provided==>",provided)
+                      console.log("==provided==>",provided.draggableProps.style)
                       return (
                         <div
                           ref={provided.innerRef}
@@ -92,6 +103,7 @@ export default class App extends Component {
                             snapshot.isDragging,
                             provided.draggableProps.style
                           )}
+                          onClick={()=>console.log("click")}
                         >
                           {item.content}
                         </div>
