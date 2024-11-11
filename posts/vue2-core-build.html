@@ -1,0 +1,690 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1" theme-name="Stellar" theme-version="1.29.1">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  
+  <title>🔥Vue2源码构建 - 宝哥的博客</title>
+
+  
+    <meta name="description" content="&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一小节中，我们会了解一下 Vue 是如何构建的。 一、Vue的基础使用官方推荐 Vue 的使用方式主要有两种：通过 CDN 和 NPM。 使用 CDN，我们可以通过在 HTML 中添加 &lt;script&gt; 标签直接引入打包好的 vue.js 文件，这是一种快速且简便的方法。 1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🔥Vue2源码构建">
+<meta property="og:url" content="http://example.com/posts/vue2-core-build.html">
+<meta property="og:site_name" content="宝哥的博客">
+<meta property="og:description" content="&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一小节中，我们会了解一下 Vue 是如何构建的。 一、Vue的基础使用官方推荐 Vue 的使用方式主要有两种：通过 CDN 和 NPM。 使用 CDN，我们可以通过在 HTML 中添加 &lt;script&gt; 标签直接引入打包好的 vue.js 文件，这是一种快速且简便的方法。 1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/banner/build.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/build/2.png">
+<meta property="article:published_time" content="2024-11-11T06:54:00.000Z">
+<meta property="article:modified_time" content="2024-11-11T07:32:51.558Z">
+<meta property="article:author" content="Jiabao Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/assets/topic/vue2/banner/build.png">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.29.1">
+
+  
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+  
+
+  
+
+  <link rel="stylesheet" href="/css/extra.css">
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://avatars.githubusercontent.com/u/77631518?u=fb7a512e1f331b63c51ddf591548f0fd2d5697ac&v=4&size=64" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">宝哥的博客</div><div class="sub normal cap">旨在分享这么多年来积累的技术</div><div class="sub hover cap" style="opacity:0"> Shared My Code</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+<nav class="menu dis-select"></nav>
+</div>
+<div class="widgets">
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：Vue2源码解析</span></div><div class="widget-body"><a class="item active" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
+
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">最近更新</span></div><div class="widget-body fs14"><a class="item title" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span></a><a class="item title" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a><a class="item title" href="/2013/12/24/tags/"><span class="title">Tags</span></a><a class="item title" href="/2024/11/11/css/1/"><span class="title">测试</span></a><a class="item title" href="/2024/11/11/css/2/"><span class="title">测试2</span></a><a class="item title" href="/posts/13.html"><span class="title">博客真的需要魔改吗</span></a><a class="item title" href="/posts/13.html"><span class="title">一、计算机语言介绍</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="javaScript:switchTheme();" rel="noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/footer/moon.svg" alt="moon" /></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top"><img class="bg lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/build.png">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-core-build.html">Vue2源码解析</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-11T06:54:00.000Z">2024-11-11</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-11T07:32:51.558Z">2024-11-11</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>🔥Vue2源码构建</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><p>&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。</p>
+<p>&emsp;&emsp;在这一小节中，我们会了解一下 Vue 是如何构建的。</p>
+<h1 id="一、Vue的基础使用"><a href="#一、Vue的基础使用" class="headerlink" title="一、Vue的基础使用"></a>一、Vue的基础使用</h1><p>官方推荐 Vue 的使用方式主要有两种：通过 <code>CDN</code> 和 <code>NPM</code>。</p>
+<p>使用 CDN，我们可以通过在 HTML 中添加 <code>&lt;script&gt;</code> 标签直接引入打包好的 vue.js 文件，这是一种快速且简便的方法。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// CDN方式</span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;vue.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure></div></div>
+
+<p>而 NPM 方式则涉及到与模块打包工具如 webpack 或 Browserify 的集成，通过执行 npm install vue 命令来安装 Vue，这通常是我们在开发大型应用时的首选方式。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// NPM方式</span><br><span class="line">import Vue from &#x27;vue&#x27;;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>当Vue被引入时，通常我们会在入口文件中去 new 一个Vue实例。</p>
+<p>然后再利用实例上的<code>$mount方法</code>将对应的模版内容挂载到浏览器中<code>#app</code>节点的位置上。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// NPM方式</span></span><br><span class="line"><span class="comment">// Nodejs版本</span></span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&#x27;vue/dist/vue.common&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 需要实例化 Vue</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>:<span class="string">`&lt;div&gt;Hello World&lt;/div&gt;`</span></span><br><span class="line">&#125;).$mount(<span class="string">&quot;#app&quot;</span>);</span><br></pre></td></tr></table></figure></div></div>
+
+<h1 id="二、Vue的构建"><a href="#二、Vue的构建" class="headerlink" title="二、Vue的构建"></a>二、Vue的构建</h1><h2 id="2-1-根据使用场景打包"><a href="#2-1-根据使用场景打包" class="headerlink" title="2.1 根据使用场景打包"></a>2.1 根据使用场景打包</h2><p>在上一节课中，我们熟悉了 Vue源码中的代码结构。</p>
+<p>其中我们介绍了几个入口文件：</p>
+<ol>
+<li><code>entry-runtime.ts</code></li>
+<li><code>entry-runtime-with-compiler.ts</code></li>
+<li><code>entry-runtime-esm.ts</code></li>
+<li><code>entry-runtime-with-compiler-esm.ts</code></li>
+</ol>
+<p>在我们开发项目结束后，需要进行打包并部署到线上。</p>
+<p>通常我们项目打包时需要一个入口文件， webpack通过这个入口文件递归文件进行依赖分析然后打包。</p>
+<p>其实框架打包也一样，同样需要一个入口文件进行递归依赖分析打包生成 js文件方便我们进行使用。 </p>
+<p>和项目不一样的是，项目往往只有一个入口文件，而框架会根据不同的情况采用不同的入口文件进行打包，上面的这四个文件就是Vue框架的入口文件。</p>
+<blockquote>
+<p>Vue是使用rollup进行打包的。</p>
+</blockquote>
+<p>为了方便用户进行使用，Vue在使用rollup进行打包时根据<code>开发环境</code>和<code>开发模式</code>打包出了不同功能的文件，以适用于不同的使用场景。</p>
+<p>构建的rollup打包脚本在<code>scripts/config.js</code>中。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> builds = &#123;</span><br><span class="line">    <span class="string">&#x27;runtime-cjs-dev&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">entry</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;web/entry-runtime.ts&#x27;</span>),</span><br><span class="line">        <span class="attr">dest</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;dist/vue.runtime.common.dev.js&#x27;</span>),</span><br><span class="line">        <span class="attr">format</span>: <span class="string">&#x27;cjs&#x27;</span>,</span><br><span class="line">        <span class="attr">env</span>: <span class="string">&#x27;development&#x27;</span>,</span><br><span class="line">        banner</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;runtime-cjs-prod&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">entry</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;web/entry-runtime.ts&#x27;</span>),</span><br><span class="line">        <span class="attr">dest</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;dist/vue.runtime.common.prod.js&#x27;</span>),</span><br><span class="line">        <span class="attr">format</span>: <span class="string">&#x27;cjs&#x27;</span>,</span><br><span class="line">        <span class="attr">env</span>: <span class="string">&#x27;production&#x27;</span>,</span><br><span class="line">        banner</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/build.png" data-fancybox="true"/></div></div>
+
+<p>总共打包生成 12 个文件，这些文件可以适用于不同的场景。</p>
+<ol>
+<li>根据是否带编译器的角度上分为Full和Runtime-Only 2个版本。Full版本包含编译器和运行时的全部功能。Runtime-Only 仅含运行时功能。</li>
+<li>打包的文件根据使用场景分为 esm、cjs、umd三个版本。其中umd可以通过<code>&lt;script&gt;</code>标签引入直接在浏览器中使用，Vue会暴露一个全局变量 Windows.Vue。而 CommonJS适配const Vue &#x3D; require(‘vue’)这种 node式的模块系统。ES则适配import Vue from ‘vue’这种es6格式。 </li>
+<li>打包的文件根据环境分为 dev&#x2F;prod，在开发环境中可以使用 dev版本的 js文件，而部署到客户生产环境就可以使用 prod版本的 js文件。 dev版本的文件有一些提示，会在开发者开发时便于调试。</li>
+</ol>
+<h2 id="2-2-Full版本的Vue到底是什么意思？"><a href="#2-2-Full版本的Vue到底是什么意思？" class="headerlink" title="2.2  Full版本的Vue到底是什么意思？"></a>2.2  Full版本的Vue到底是什么意思？</h2><div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/build/2.png" data-fancybox="true"/></div></div>
+
+<p>平时我们开发中只使用了 runtime-only 版本。</p>
+<p>而 Full版本中不仅有 runtime-only部分，还包括编译器部分。</p>
+<p>所谓编译器，就是在Vue内部的编译器可以将模板转化为对应的render函数。</p>
+<blockquote>
+<p>在Vue内部渲染就是调用的 render方法生成 vnode。</p>
+</blockquote>
+<p>因为编译器代码体积比较大，而且如果在运行的时候进行模板编译，极大可能会消耗性能。</p>
+<p>所以我们一般在开发项目时，使用 runtime-only版本。</p>
+<p>在 webpack预编译阶段，就将.vue文件编译成render函数，在运行时直接运行 render函数就可以获取到对应的 vnode。</p>
+<blockquote>
+<p>通过 runtime-only 和 esm很容易推测出来我们项目在开发阶段中使用的是<code>vue.runtime.esm.js</code></p>
+</blockquote>
+<h2 id="2-3-使用-Full-还是用-Runtime-Only版本"><a href="#2-3-使用-Full-还是用-Runtime-Only版本" class="headerlink" title="2.3 使用 Full 还是用 Runtime-Only版本"></a>2.3 使用 Full 还是用 Runtime-Only版本</h2><p>这需要依据具体情况进行具体分析。</p>
+<p>倘若你需要用到 Vue 所提供的 html 模板功能，那就选用 Full 版本。</p>
+<p>反之，最好采用 Runtime-only 版本，原因在于它比 Full 版本的文件体积大约小 30%。</p>
+<blockquote>
+<p>*.vue 单文件组件会被 vue-loader 直接构建成为 JavaScript，并未使用到 Vue 的编译器，所以可以使用 Runtime-only 版本。</p>
+</blockquote>
+<h1 id="三、神奇的“-DEV-”"><a href="#三、神奇的“-DEV-”" class="headerlink" title="三、神奇的“__DEV__”"></a>三、神奇的“__DEV__”</h1><p>在前面我们说到，在打包成开发环境的包时，往往会存在很多提示信息。</p>
+<p>而源码中判断开发环境通常都是使用<code>__DEV__</code>来进行判断。</p>
+<h2 id="3-1-DEV-的本质"><a href="#3-1-DEV-的本质" class="headerlink" title="3.1 __DEV__的本质"></a>3.1 __DEV__的本质</h2><p>在Vue源码中，到处都能看到<code>__DEV__</code>变量的身影。</p>
+<p>但是你看不到<code>__DEV__</code>被 <code>import</code> 引入，甚至你都找不到在哪里定义了这个变量。</p>
+<p>这个变量在 Vue 中代表开发环境。</p>
+<p>当你在源码中看见 <code>if(__DEV__)</code> 代表这个if中的逻辑只有在开发环境才进入执行。</p>
+<p>vue的构建工具是rollup，在rollup打包的时候会使用<code>@rollup/plugin-replace</code> 插件来替换源代码中的<code>__DEV__</code>变量，如下：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">......</span><br><span class="line"><span class="keyword">const</span> replace = <span class="built_in">require</span>(<span class="string">&#x27;@rollup/plugin-replace&#x27;</span>)</span><br><span class="line">......</span><br><span class="line"><span class="comment">// built-in vars</span></span><br><span class="line"><span class="keyword">const</span> vars = &#123;</span><br><span class="line">    ......</span><br><span class="line">    <span class="attr">__DEV__</span>: <span class="string">`process.env.NODE_ENV !== &#x27;production&#x27;`</span>,</span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br><span class="line">......</span><br><span class="line">config.<span class="property">plugins</span>.<span class="title function_">push</span>(<span class="title function_">replace</span>(vars))</span><br><span class="line">...... </span><br></pre></td></tr></table></figure></div></div>
+
+<p>所以<code>__DEV__</code>的本质就是 <code>proess.env.NODE_ENV!== &#39;production&#39;</code> 。</p>
+<h2 id="3-2-约定俗成的“process-env-NODE-ENV-’production”"><a href="#3-2-约定俗成的“process-env-NODE-ENV-’production”" class="headerlink" title="3.2 约定俗成的“process.env.NODE_ENV!&#x3D;&#x3D;’production”"></a>3.2 约定俗成的“process.env.NODE_ENV!&#x3D;&#x3D;’production”</h2><p>将 <strong>DEV</strong> 变量转换为 <code>process.env.NODE_ENV !== &#39;production&#39;</code> 这样的条件表达式在现代前端构建工具中是一种常见的约定和实践。</p>
+<p>原因有以下几点：</p>
+<ol>
+<li><code>环境区分</code>：通过 <code>process.env.NODE_ENV</code> 可以方便地在代码中区分开发环境（development）与生产环境（production）。例如，在开发环境中启用特定的警告、日志记录或者热加载功能；而在生产环境中则禁用这些功能以优化性能。</li>
+<li><code>Tree-shaking 和 UglifyJS</code>：当打包工具如 Rollup 或 webpack 遇到 <code>process.env.NODE_DEV !== &#39;production&#39;</code> 包裹的代码块时，在生产环境下会自动去除（tree-shake）其中仅在开发环境中需要的代码，因为该条件表达式最终会被编译器或压缩工具识别为始终为 false，因此包裹的代码不会被打包进最终产物。</li>
+<li><code>标准化</code>：许多框架和库都采用了这种模式来处理环境相关的逻辑，这样开发者可以统一遵循这个约定，减少配置和理解成本。</li>
+<li><code>灵活配置</code>：由于构建工具支持 .env 文件或其他方式来设置 NODE_ENV 的值，这使得项目配置更加灵活，团队成员可以根据实际需求快速切换不同环境下的行为。</li>
+<li><code>跨平台兼容性</code>：<code>process.env.NODE_ENV</code> 作为一个标准 Node.js 环境变量接口，已经被广泛接受，并且在各种打包工具中都有相应的机制将其映射到最终浏览器执行的代码中，确保了跨平台的一致性。</li>
+</ol>
+<blockquote>
+<p>一般项目在开发环境中将process.env.NODE_ENV设置为<code>development</code>，在生产环境中设置为<code>production</code>。</p>
+<p>所以通过<code>process.env.NODE_ENV !== &#39;production</code>就可以判断现在是处于什么环境下。</p>
+</blockquote>
+<h2 id="3-3-在本地环境配置-DEV"><a href="#3-3-在本地环境配置-DEV" class="headerlink" title="3.3 在本地环境配置__DEV__"></a>3.3 在本地环境配置__DEV__</h2><p>因为我们这门课程是写一个完整版的vue2。</p>
+<p>所以我们也会使用__DEV__这个变量代表开发环境。</p>
+<p>我们本地的项目是使用 vue-cli 搭建的。</p>
+<p>可以在 webpack配置文件 vue.config.js 文件新增一个配置达到这个目的。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vue.config.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; defineConfig &#125; = <span class="built_in">require</span>(<span class="string">&#x27;@vue/cli-service&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">&#x27;webpack&#x27;</span>);</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">transpileDependencies</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">lintOnSave</span>:<span class="literal">false</span>,</span><br><span class="line">  <span class="attr">configureWebpack</span>: &#123;</span><br><span class="line">    <span class="attr">plugins</span>: [</span><br><span class="line">      <span class="keyword">new</span> webpack.<span class="title class_">DefinePlugin</span>(&#123;</span><br><span class="line">        <span class="attr">__DEV__</span>: process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;development&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div></div>
+
+<blockquote>
+<p>DefinePlugin 插件的主要作用是在编译时将预定义的值替换到源代码中的特定变量。</p>
+</blockquote>
+<p>我们执行<code>yarn start</code>启动这个项目打印一下__DEV__为 true即为成功。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(__DEV__); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></div></div>
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>如果这篇文章对你有一定启发和帮助。欢迎给予打赏。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"></p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/posts/vue2-catalog.html">🔥Vue2目录结构窥探</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">Jiabao Wu</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1">Stellar 1.29.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81Vue%E7%9A%84%E5%9F%BA%E7%A1%80%E4%BD%BF%E7%94%A8"><span class="toc-text">一、Vue的基础使用</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vue%E7%9A%84%E6%9E%84%E5%BB%BA"><span class="toc-text">二、Vue的构建</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-%E6%A0%B9%E6%8D%AE%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF%E6%89%93%E5%8C%85"><span class="toc-text">2.1 根据使用场景打包</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-Full%E7%89%88%E6%9C%AC%E7%9A%84Vue%E5%88%B0%E5%BA%95%E6%98%AF%E4%BB%80%E4%B9%88%E6%84%8F%E6%80%9D%EF%BC%9F"><span class="toc-text">2.2  Full版本的Vue到底是什么意思？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E4%BD%BF%E7%94%A8-Full-%E8%BF%98%E6%98%AF%E7%94%A8-Runtime-Only%E7%89%88%E6%9C%AC"><span class="toc-text">2.3 使用 Full 还是用 Runtime-Only版本</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E7%A5%9E%E5%A5%87%E7%9A%84%E2%80%9C-DEV-%E2%80%9D"><span class="toc-text">三、神奇的“__DEV__”</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-DEV-%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="toc-text">3.1 __DEV__的本质</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-%E7%BA%A6%E5%AE%9A%E4%BF%97%E6%88%90%E7%9A%84%E2%80%9Cprocess-env-NODE-ENV-%E2%80%99production%E2%80%9D"><span class="toc-text">3.2 约定俗成的“process.env.NODE_ENV!&#x3D;&#x3D;’production”</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-%E5%9C%A8%E6%9C%AC%E5%9C%B0%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE-DEV"><span class="toc-text">3.3 在本地环境配置__DEV__</span></a></li></ol></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js`,
+    marked: `https://cdn.jsdelivr.net/npm/marked@13.0.1/lib/marked.umd.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+
+<!-- required -->
+<script src="/js/main.js?v=1.29.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    applyThemeToGiscus(theme)
+  }
+
+  const applyThemeToGiscus = (theme) => {
+    theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    }
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error)';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const els = document.getElementsByClassName('ds-memos');
+    if (els != undefined && els.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
