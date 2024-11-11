@@ -15,7 +15,9 @@ site_tree:
   # 博客列表页配置
   index_blog:
     leftbar: introduction
-    rightbar: weixinquan
+  index_category:
+    leftbar:
+      - related
   
   
 
