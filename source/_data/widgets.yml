@@ -1,0 +1,21 @@
+introduction:
+  layout: markdown
+  title: 个人介绍 
+  content: |
+    本人拥有多年编程经验，精通 **Java**、**Js**、**React**、**Vue**、**Python**等。<br /> 
+
+    接各种**网站开发**、**h5/微信小程序/支付宝小程序/抖音小程序/快手小程序/qq小程序开发**、**ERP/CRM系统开发**。
+
+    有需求的话，可以添加我的微信。
+
+    ![](/assets/author/wechat.jpg)
+
+donate:
+  layout: markdown
+  title: 赞助
+  content: |
+    如果这篇文章对你有一定启发和帮助。
+
+    欢迎给于打赏。
+
+    ![](/assets/author/wechat-money.jpg)

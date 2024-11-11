@@ -4,13 +4,14 @@
 
 # Site
 title: 宝哥的博客
-subtitle: '每个人的独立博客 | Designed by wujiabao'
+subtitle: '旨在分享这么多年来积累的技术 | Shared My Code'
 avatar: https://avatars.githubusercontent.com/u/77631518?u=fb7a512e1f331b63c51ddf591548f0fd2d5697ac&v=4&size=64
 description: ''
 keywords:
 author: Jiabao Wu
 language: zh-CN
-timezone: ''
+favicon: /assets/ico/favicon.ico
+timezone:
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'

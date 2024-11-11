@@ -1,0 +1,16 @@
+/** 设置侧边栏底部 **/
+.social-wrap {
+    display: block;
+}
+.social-wrap .social:hover {
+    background-color: #d7beb6
+}
+
+/** 设置右边栏 **/
+/** 右边栏目录高度设置 **/
+.l_right .widgets .widget-wrapper.toc .widget-body .toc{
+    /* max-height: calc(100vh - 500px); */
+}
+.widget-wrapper.toc+.widget-wrapper{
+    padding-top: 0px;
+}

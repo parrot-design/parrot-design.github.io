@@ -1,4 +1,47 @@
-logo:
-  subtitle: '十年前端开发者的博客分享 | Designed by xaoxuu'
-
 # 侧边栏配置
+# menubar:
+#   columns: 0 # 一行几个
+#   items:
+#     - id: post #页面中高量的 menu_id
+#       theme: "#1BCDFC"
+#       icon: solar:documents-bold-duotone # 支持 svg/img 标签，可以定义在 icons.yml 文件中，也支持外部图片的 URL
+#       title: 首页 # 标题
+#       url: / # 跳转链接，支持相对路径和绝对路
+# 站点主结构树
+site_tree:
+  # 主页配置
+  home:
+    leftbar: introduction
+  # 博客列表页配置
+  index_blog:
+    leftbar: introduction
+    rightbar: weixinquan
+  
+  
+
+# 文章设置
+article:
+  # 可以自定义协议内容
+  license: |
+    如果这篇文章对你有一定启发和帮助。欢迎给予打赏。
+
+    ![](/assets/author/wechat-money.jpg)
+
+# 开启图片点击放大功能 {% image %}
+tag_plugins:
+  image:
+    fancybox: true
+
+
+# 页脚
+footer:
+  social:
+    # 新增切换主题的按钮
+    Moon:
+      icon: <img src="/assets/footer/moon.svg" alt="moon" />
+      url: javaScript:switchTheme();
+
+
+inject:
+  head:
+    - <link rel="stylesheet" href="/css/extra.css">
