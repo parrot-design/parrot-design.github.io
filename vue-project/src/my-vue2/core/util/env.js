@@ -18,3 +18,8 @@ export const hasSymbol =
   isNative(Reflect.ownKeys)
 
 export const nativeWatch = {}.watch
+
+// 是浏览器原生函数
+export function isNative(Ctor) {
+  return typeof Ctor === 'function' && /native code/.test(Ctor.toString())
+}

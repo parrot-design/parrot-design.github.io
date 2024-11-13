@@ -17,33 +17,28 @@ site_tree:
     leftbar: introduction
   index_category:
     leftbar:
-      - related
-  
-  
-
+      - related 
 # 文章设置
 article:
   # 可以自定义协议内容
   license: |
     如果这篇文章对你有一定启发和帮助。欢迎给予打赏。
 
-    ![](/assets/author/wechat-money.jpg)
-
+    ![](/assets/author/wechat-money.jpg) 
 # 开启图片点击放大功能 {% image %}
 tag_plugins:
   image:
-    fancybox: true
-
-
+    fancybox: true 
 # 页脚
 footer:
   social:
     # 新增切换主题的按钮
     Moon:
       icon: <img src="/assets/footer/moon.svg" alt="moon" />
-      url: javaScript:switchTheme();
-
-
+      url: javaScript:switchTheme();  
+  content: |
+    <span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 inject:
   head:
     - <link rel="stylesheet" href="/css/extra.css">

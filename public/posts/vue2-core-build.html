@@ -20,17 +20,17 @@
   <title>🔥Vue2源码构建 - 宝哥的博客</title>
 
   
-    <meta name="description" content="&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一篇文章中，我们会知晓 Vue 是如何构建的。 一、Vue的构建1.1 根据使用场景打包在上一篇专栏文章中，我们熟悉了 Vue源码中的代码结构。 其中我们介绍了几个入口文件：  entry-runtime.ts entry-runtime-with-compiler.ts entry-r">
+    <meta name="description" content="专栏第二篇-源码构建  &emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一篇文章中，我们会知晓 Vue 是如何构建的。 一、Vue的构建1.1 根据使用场景打包在上一篇专栏文章中，我们熟悉了 Vue源码中的代码结构。 其中我们介绍了几个入口文件：  entry-runtime.ts entry-runtime-with-compile">
 <meta property="og:type" content="article">
 <meta property="og:title" content="🔥Vue2源码构建">
 <meta property="og:url" content="http://example.com/posts/vue2-core-build.html">
 <meta property="og:site_name" content="宝哥的博客">
-<meta property="og:description" content="&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一篇文章中，我们会知晓 Vue 是如何构建的。 一、Vue的构建1.1 根据使用场景打包在上一篇专栏文章中，我们熟悉了 Vue源码中的代码结构。 其中我们介绍了几个入口文件：  entry-runtime.ts entry-runtime-with-compiler.ts entry-r">
+<meta property="og:description" content="专栏第二篇-源码构建  &emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。 &emsp;&emsp;在这一篇文章中，我们会知晓 Vue 是如何构建的。 一、Vue的构建1.1 根据使用场景打包在上一篇专栏文章中，我们熟悉了 Vue源码中的代码结构。 其中我们介绍了几个入口文件：  entry-runtime.ts entry-runtime-with-compile">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/banner/build.png">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/build/2.png">
 <meta property="article:published_time" content="2024-11-11T06:54:00.000Z">
-<meta property="article:modified_time" content="2024-11-12T05:32:06.467Z">
+<meta property="article:modified_time" content="2024-11-13T05:42:01.382Z">
 <meta property="article:author" content="Jiabao Wu">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/assets/topic/vue2/banner/build.png">
@@ -66,7 +66,7 @@
 <nav class="menu dis-select"></nav>
 </div>
 <div class="widgets">
-<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：图解Vue2源码</span></div><div class="widget-body"><a class="item" href="/posts/vue2-constructor.html"><span class="title">🔥Vue2的基本使用和原型设计</span></a><a class="item active" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：图解Vue2源码</span></div><div class="widget-body"><a class="item" href="/posts/vue2-merge-options.html"><span class="title">🔥Vue2丰富的选项合并策略</span></a><a class="item" href="/posts/vue2-init.html"><span class="title">🔥Vue2初始化时都干了什么事</span></a><a class="item" href="/posts/vue2-constructor.html"><span class="title">🔥Vue2的基本使用和原型设计</span></a><a class="item active" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
 </div>
 <footer class="footer dis-select"><div class="social-wrap"><a class="social" href="javaScript:switchTheme();" rel="noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/footer/moon.svg" alt="moon" /></a></div></footer>
 </div></aside><div class="l_main" id="main">
@@ -78,8 +78,8 @@
 <div class="article banner top"><img class="bg lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/build.png">
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
-<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-constructor.html">图解Vue2源码</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-11T06:54:00.000Z">2024-11-11</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-12T05:32:06.467Z">2024-11-12</time></span></div></div></div>
+<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-merge-options.html">图解Vue2源码</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-11T06:54:00.000Z">2024-11-11</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-13T05:42:01.382Z">2024-11-13</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -90,7 +90,9 @@
     </div>
     
   </div>
-  </div><article class="md-text content"><p>&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。</p>
+  </div><article class="md-text content"><div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第二篇-源码构建</span><span class="empty"></span></p></div>
+
+<p>&emsp;&emsp;在上一篇文章中，我们大概了解了Vue的目录结构是怎么样的。</p>
 <p>&emsp;&emsp;在这一篇文章中，我们会知晓 Vue 是如何构建的。</p>
 <h1 id="一、Vue的构建"><a href="#一、Vue的构建" class="headerlink" title="一、Vue的构建"></a>一、Vue的构建</h1><h2 id="1-1-根据使用场景打包"><a href="#1-1-根据使用场景打包" class="headerlink" title="1.1 根据使用场景打包"></a>1.1 根据使用场景打包</h2><p>在上一篇专栏文章中，我们熟悉了 Vue源码中的代码结构。</p>
 <p>其中我们介绍了几个入口文件：</p>
@@ -104,8 +106,9 @@
 <p>通常我们项目打包时需要一个入口文件， webpack通过这个入口文件递归文件进行依赖分析然后打包。</p>
 <p>其实框架打包也一样，同样需要一个入口文件进行递归依赖分析打包生成 js文件方便我们进行使用。 </p>
 <p>和项目不一样的是，项目往往只有一个入口文件，而框架会根据不同的情况采用不同的入口文件进行打包，上面的这四个文件就是Vue框架的入口文件。</p>
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>Vue是使用rollup进行打包的。</p></blockquote></div></div>
-
+<blockquote>
+<p>Vue是使用rollup进行打包的。</p>
+</blockquote>
 <p>为了方便用户进行使用，Vue在使用rollup进行打包时根据<mark class="tag-plugin colorful mark" color="orange">开发环境</mark>&#96;和<mark class="tag-plugin colorful mark" color="orange">开发模式</mark>打包出了不同功能的文件，以适用于不同的使用场景。</p>
 <p>构建的rollup打包脚本的代码在<code>scripts/config.js</code>文件中。</p>
 <div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> builds = &#123;</span><br><span class="line">    <span class="string">&#x27;runtime-cjs-dev&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">entry</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;web/entry-runtime.ts&#x27;</span>),</span><br><span class="line">        <span class="attr">dest</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;dist/vue.runtime.common.dev.js&#x27;</span>),</span><br><span class="line">        <span class="attr">format</span>: <span class="string">&#x27;cjs&#x27;</span>,</span><br><span class="line">        <span class="attr">env</span>: <span class="string">&#x27;development&#x27;</span>,</span><br><span class="line">        banner</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="string">&#x27;runtime-cjs-prod&#x27;</span>: &#123;</span><br><span class="line">        <span class="attr">entry</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;web/entry-runtime.ts&#x27;</span>),</span><br><span class="line">        <span class="attr">dest</span>: <span class="title function_">resolve</span>(<span class="string">&#x27;dist/vue.runtime.common.prod.js&#x27;</span>),</span><br><span class="line">        <span class="attr">format</span>: <span class="string">&#x27;cjs&#x27;</span>,</span><br><span class="line">        <span class="attr">env</span>: <span class="string">&#x27;production&#x27;</span>,</span><br><span class="line">        banner</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="comment">// 省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
@@ -123,18 +126,21 @@
 <p>平时我们开发中只使用了 runtime-only 版本。</p>
 <p>而 Full版本中不仅有 runtime-only部分，还包括编译器部分。</p>
 <p>所谓编译器，就是在Vue内部的编译器可以将模板转化为对应的render函数。</p>
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>在Vue内部渲染就是调用的 render方法生成 vnode。</p></blockquote></div></div>
-
+<blockquote>
+<p>在Vue内部渲染就是调用的 render方法生成 vnode。</p>
+</blockquote>
 <p>因为编译器代码体积比较大，而且如果在运行的时候进行模板编译，极大可能会消耗性能。</p>
 <p>所以我们一般在开发项目时，使用 runtime-only版本。</p>
 <p>在 webpack预编译阶段，就将.vue文件编译成render函数，在运行时直接运行 render函数就可以获取到对应的 vnode。</p>
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>通过 runtime-only 和 esm很容易推测出来我们项目在开发阶段中使用的是<code>vue.runtime.esm.js</code></p></blockquote></div></div>
-
+<blockquote>
+<p>通过 runtime-only 和 esm很容易推测出来我们项目在开发阶段中使用的是<code>vue.runtime.esm.js</code></p>
+</blockquote>
 <h2 id="1-3-使用-Full-还是用-Runtime-Only版本"><a href="#1-3-使用-Full-还是用-Runtime-Only版本" class="headerlink" title="1.3 使用 Full 还是用 Runtime-Only版本"></a>1.3 使用 Full 还是用 Runtime-Only版本</h2><p>这需要依据具体情况进行具体分析。</p>
 <p>倘若你需要用到 Vue 所提供的 html 模板功能，那就选用 Full 版本。</p>
 <p>反之，最好采用 Runtime-only 版本，原因在于它比 Full 版本的文件体积大约小 30%。</p>
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>*.vue 单文件组件会被 vue-loader 直接构建成为 JavaScript，并未使用到 Vue 的编译器，所以可以使用 Runtime-only 版本。</p></blockquote></div></div>
-
+<blockquote>
+<p>*.vue 单文件组件会被 vue-loader 直接构建成为 JavaScript，并未使用到 Vue 的编译器，所以可以使用 Runtime-only 版本。</p>
+</blockquote>
 <h1 id="二、神奇的“-DEV-”"><a href="#二、神奇的“-DEV-”" class="headerlink" title="二、神奇的“__DEV__”"></a>二、神奇的“__DEV__”</h1><p>在前面我们说到，在打包成开发环境的包时，往往会存在很多提示信息。</p>
 <p>而源码中判断开发环境通常都是使用<code>__DEV__</code>来进行判断。</p>
 <h2 id="2-1-DEV-的本质"><a href="#2-1-DEV-的本质" class="headerlink" title="2.1 __DEV__的本质"></a>2.1 __DEV__的本质</h2><p>在Vue源码中，到处都能看到<code>__DEV__</code>变量的身影。</p>
@@ -154,16 +160,18 @@
 <li><code>灵活配置</code>：由于构建工具支持 .env 文件或其他方式来设置 NODE_ENV 的值，这使得项目配置更加灵活，团队成员可以根据实际需求快速切换不同环境下的行为。</li>
 <li><code>跨平台兼容性</code>：<code>process.env.NODE_ENV</code> 作为一个标准 Node.js 环境变量接口，已经被广泛接受，并且在各种打包工具中都有相应的机制将其映射到最终浏览器执行的代码中，确保了跨平台的一致性。</li>
 </ol>
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>一般项目在开发环境中将process.env.NODE_ENV设置为<code>development</code>，在生产环境中设置为<code>production</code>。</p><p>所以通过<code>process.env.NODE_ENV !== &#39;production</code>就可以判断现在是处于什么环境下。</p></blockquote></div></div>
-
+<blockquote>
+<p>一般项目在开发环境中将process.env.NODE_ENV设置为<code>development</code>，在生产环境中设置为<code>production</code>。</p>
+<p>所以通过<code>process.env.NODE_ENV !== &#39;production</code>就可以判断现在是处于什么环境下。</p>
+</blockquote>
 <h2 id="2-3-在本地环境配置-DEV"><a href="#2-3-在本地环境配置-DEV" class="headerlink" title="2.3 在本地环境配置__DEV__"></a>2.3 在本地环境配置__DEV__</h2><p>因为我们这门课程是写一个完整版的vue2。</p>
 <p>所以我们也会使用__DEV__这个变量代表开发环境。</p>
 <p>我们本地的项目是使用 vue-cli 搭建的。</p>
 <p>可以在 webpack配置文件 vue.config.js 文件新增一个配置达到这个目的。</p>
 <div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// vue.config.js</span></span><br><span class="line"><span class="keyword">const</span> &#123; defineConfig &#125; = <span class="built_in">require</span>(<span class="string">&#x27;@vue/cli-service&#x27;</span>);</span><br><span class="line"><span class="keyword">const</span> webpack = <span class="built_in">require</span>(<span class="string">&#x27;webpack&#x27;</span>);</span><br><span class="line"><span class="variable language_">module</span>.<span class="property">exports</span> = <span class="title function_">defineConfig</span>(&#123;</span><br><span class="line">  <span class="attr">transpileDependencies</span>: <span class="literal">true</span>,</span><br><span class="line">  <span class="attr">lintOnSave</span>:<span class="literal">false</span>,</span><br><span class="line">  <span class="attr">configureWebpack</span>: &#123;</span><br><span class="line">    <span class="attr">plugins</span>: [</span><br><span class="line">      <span class="keyword">new</span> webpack.<span class="title class_">DefinePlugin</span>(&#123;</span><br><span class="line">        <span class="attr">__DEV__</span>: process.<span class="property">env</span>.<span class="property">NODE_ENV</span> === <span class="string">&#x27;development&#x27;</span>,</span><br><span class="line">      &#125;),</span><br><span class="line">    ],</span><br><span class="line">  &#125;,</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div></div>
-
-<div class="tag-plugin colorful note" color="cyan" child="codeblock"><div class="body"><blockquote><p>DefinePlugin 插件的主要作用是在编译时将预定义的值替换到源代码中的特定变量。</p></blockquote></div></div>
-
+<blockquote>
+<p>DefinePlugin 插件的主要作用是在编译时将预定义的值替换到源代码中的特定变量。</p>
+</blockquote>
 <p>我们执行<code>yarn start</code>启动这个项目打印一下__DEV__为 true即为成功。</p>
 <div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(__DEV__); <span class="comment">// true</span></span><br></pre></td></tr></table></figure></div></div>
 
@@ -182,7 +190,7 @@
     <section id="license">
       <div class="header"><span>许可协议</span></div>
       <div class="body"><p>如果这篇文章对你有一定启发和帮助。欢迎给予打赏。</p>
-<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"></p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"> </p>
 </div>
     </section>
     </div>
@@ -194,7 +202,8 @@
 
 
 
-<footer class="page-footer footnote"><hr><div class="text"><p>本站由 <a href="/">Jiabao Wu</a> 使用 <a target="_blank" rel="noopener" href="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1">Stellar 1.29.1</a> 主题创建。<br>本博客所有文章除特别声明外，均采用 <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> 许可协议，转载请注明出处。</p>
+<footer class="page-footer footnote"><hr><div class="text"><p><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></p>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </div></footer>
 <div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
 <div class="widgets">

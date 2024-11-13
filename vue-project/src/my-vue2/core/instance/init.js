@@ -7,6 +7,7 @@ import { initEvents } from "./events";
 import { initRender } from "./render";
 import { initState } from "./state";
 import { initProvide,initInjections } from "./inject";
+import { initProxy } from "./proxy";
  
 let uid = 0;
 
@@ -38,6 +39,11 @@ export function initMixin(Vue){
                 options || {},
                 vm
             )
+        }
+        if (__DEV__) {
+            initProxy(vm)
+        } else {
+            vm._renderProxy = vm
         }
         // 将 vm._self指向实例本身
         vm._self = vm; 
