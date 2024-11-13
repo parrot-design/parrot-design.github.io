@@ -1,0 +1,937 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1" theme-name="Stellar" theme-version="1.29.1">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  
+  <title>🔥Vue2丰富的选项合并策略 - 宝哥的博客</title>
+
+  
+    <meta name="description" content="专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入的选项合并到实例的选项">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🔥Vue2丰富的选项合并策略">
+<meta property="og:url" content="http://example.com/posts/vue2-merge-options.html">
+<meta property="og:site_name" content="宝哥的博客">
+<meta property="og:description" content="专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入的选项合并到实例的选项">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/1.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/2.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/4.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/3.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/5.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/6.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/7.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/8.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/9.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/10.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/11.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/12.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/13.png">
+<meta property="article:published_time" content="2024-11-12T05:55:00.000Z">
+<meta property="article:modified_time" content="2024-11-13T07:10:41.076Z">
+<meta property="article:author" content="Jiabao Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/assets/topic/vue2/mergeoptions/1.png">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.29.1">
+
+  
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+  
+
+  
+
+  <link rel="stylesheet" href="/css/extra.css">
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://avatars.githubusercontent.com/u/77631518?u=fb7a512e1f331b63c51ddf591548f0fd2d5697ac&v=4&size=64" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">宝哥的博客</div><div class="sub normal cap">旨在分享这么多年来积累的技术</div><div class="sub hover cap" style="opacity:0"> Share My Code</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+<nav class="menu dis-select"></nav>
+</div>
+<div class="widgets">
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：图解Vue2源码</span></div><div class="widget-body"><a class="item active" href="/posts/vue2-merge-options.html"><span class="title">🔥Vue2丰富的选项合并策略</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-init.html"><span class="title">🔥Vue2初始化时都干了什么事</span></a><a class="item" href="/posts/vue2-constructor.html"><span class="title">🔥Vue2的基本使用和原型设计</span></a><a class="item" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="javaScript:switchTheme();" rel="noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/footer/moon.svg" alt="moon" /></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top"><img class="bg lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/mergeoptions.png">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-merge-options.html">图解Vue2源码</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-12T05:55:00.000Z">2024-11-12</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-13T07:10:41.076Z">2024-11-13</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>🔥Vue2丰富的选项合并策略</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第五篇-丰富的选项合并策略</span><span class="empty"></span></p></div>
+
+<h1 id="一、实例化时合并选项"><a href="#一、实例化时合并选项" class="headerlink" title="一、实例化时合并选项"></a>一、实例化时合并选项</h1><p>在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。</p>
+<p>那什么是选项呢？</p>
+<p>在 <mark class="tag-plugin colorful mark" color="orange">new Vue(选项)</mark>中，Vue构造函数中传入的数据就是选项，代表<mark class="tag-plugin colorful mark" color="orange">传入的选项</mark>，一般以对象形式传入。</p>
+<p>在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。</p>
+<blockquote>
+<p>在实例化时需要将实例对应的构造函数上的选项和传入的选项合并到实例的选项上。</p>
+</blockquote>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/1.png" data-fancybox="true"/></div></div>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vm.<span class="property">$options</span> = <span class="title function_">mergeOptions</span>(</span><br><span class="line">    <span class="title function_">resolveConstructorOptions</span>(vm.<span class="property">constructor</span>),</span><br><span class="line">    options || &#123;&#125;,</span><br><span class="line">    vm</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>上面 mergeOptions 则是用于合并 2 个 options，resolveConstructorOptions用于获取构造函数上的options。 </p>
+<blockquote>
+<p>在前面的文章 Vue的原型设计中，我们知道 vm.constructor 就是指的 Vue构造函数 </p>
+</blockquote>
+<h1 id="二、Vue构造函数的默认选项"><a href="#二、Vue构造函数的默认选项" class="headerlink" title="二、Vue构造函数的默认选项"></a>二、Vue构造函数的默认选项</h1><p>前面我们知道 vm.$options 中会合并Vue构造函数的 options。</p>
+<p>那么 Vue.options 有值吗？ </p>
+<p>实际上Vue构造函数本身会自带一些默认的选项。</p>
+<p>在Vue被引入时，会执行多个方法给Vue.options注入属性。</p>
+<h2 id="2-1-initGlobalAPI方法创建-Vue-options"><a href="#2-1-initGlobalAPI方法创建-Vue-options" class="headerlink" title="2.1 initGlobalAPI方法创建 Vue.options"></a>2.1 initGlobalAPI方法创建 Vue.options</h2><p>initGlobalAPI方法在Vue被引入时执行。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// core/global-api/index.ts</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="variable constant_">ASSET_TYPES</span> = [<span class="string">&#x27;component&#x27;</span>,<span class="string">&#x27;directive&#x27;</span>,<span class="string">&#x27;filter&#x27;</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> builtInComponents = &#123;</span><br><span class="line">    <span class="title class_">KeepAlive</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">initGlobalAPI</span>(<span class="params">Vue</span>)&#123;</span><br><span class="line">    <span class="comment">// Object.create用于创建一个对象 该对象没有原型</span></span><br><span class="line">    <span class="title class_">Vue</span>.<span class="property">options</span> = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>)</span><br><span class="line">    <span class="variable constant_">ASSET_TYPES</span>.<span class="title function_">forEach</span>(<span class="function"><span class="params">type</span> =&gt;</span> &#123;</span><br><span class="line">      <span class="title class_">Vue</span>.<span class="property">options</span>[type + <span class="string">&#x27;s&#x27;</span>] = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>)</span><br><span class="line">    &#125;);</span><br><span class="line">    <span class="title class_">Vue</span>.<span class="property">options</span>.<span class="property">_base</span> = <span class="title class_">Vue</span>; </span><br><span class="line">    <span class="title function_">extend</span>(<span class="title class_">Vue</span>.<span class="property">options</span>.<span class="property">components</span>, builtInComponents) </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>可以看到，installGlobalAPI方法中创建了 Vue.options为一个纯净的空对象，然后在options上面注入了一些属性。</p>
+<mark class="tag-plugin colorful mark" color="orange">_base就是 Vue构造函数</mark>。每个Vue组件都是通过_base属性获取到Vue构造函数，然后使用Vue.extend来生成对应的 VueComponent构造函数。
+
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><blockquote><p>extend方法是vue中的一个通用方法。</p><p>用于将第二个参数的值合并到第一个参数中，返回第一个参数。</p><p>第二个参数的值直接覆盖进第一个参数</p></blockquote></div></div>
+
+<details class="tag-plugin colorful folding" color="purple" child="codeblock"><summary><span>extend函数源码</span></summary><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">extend</span>(<span class="params"></span></span><br><span class="line"><span class="params">  to,</span></span><br><span class="line"><span class="params">  _from</span></span><br><span class="line"><span class="params"></span>)&#123;</span><br><span class="line">  <span class="comment">// 用于合并第二个参数到第一个参数中  </span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> _from) &#123;</span><br><span class="line">    <span class="comment">// 覆盖参数属性</span></span><br><span class="line">    to[key] = _from[key]</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> to</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></details>
+
+<h2 id="2-2-合并指令-内置组件"><a href="#2-2-合并指令-内置组件" class="headerlink" title="2.2 合并指令 &amp; 内置组件"></a>2.2 合并指令 &amp; 内置组件</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// platforms/web/runtime/index</span></span><br><span class="line"><span class="keyword">const</span> platformDirectives = &#123;</span><br><span class="line">    model,</span><br><span class="line">    show</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> platformComponents = &#123;</span><br><span class="line">    <span class="title class_">Transition</span>,</span><br><span class="line">    <span class="title class_">TransitionGroup</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="title function_">extend</span>(<span class="title class_">Vue</span>.<span class="property">options</span>.<span class="property">directives</span>, platformDirectives)</span><br><span class="line"><span class="title function_">extend</span>(<span class="title class_">Vue</span>.<span class="property">options</span>.<span class="property">components</span>, platformComponents)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>该段逻辑也是在 Vue被引入时执行，扩展了一些跟 web平台相关的指令和组件。</p>
+<h2 id="2-3-总结"><a href="#2-3-总结" class="headerlink" title="2.3 总结"></a>2.3 总结</h2><p>经过我们的研究发现，Vue构造函数的默认选项有：</p>
+<ol>
+<li><mark class="tag-plugin colorful mark" color="orange">_base</mark>： 代表Vue构造函数，后续用来创建组件的构造函数VueComponent。</li>
+<li><mark class="tag-plugin colorful mark" color="orange">directive</mark>：代表需要注册的指令，默认的提供了 v-model、v-show的内置指令。</li>
+<li><mark class="tag-plugin colorful mark" color="orange">components</mark>：代表需要注册的组件选项，默认提供了 KeepAlive、Transition、TransitionGroup的内置组件。</li>
+<li><mark class="tag-plugin colorful mark" color="orange">filter</mark> ：代表需要注册的过滤器，默认没有提供默认值。</li>
+</ol>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/2.png" data-fancybox="true"/></div></div>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/4.png" data-fancybox="true"/></div></div>
+
+<h1 id="三、子类构造函数的-options"><a href="#三、子类构造函数的-options" class="headerlink" title="三、子类构造函数的 options"></a>三、子类构造函数的 options</h1><p>学习完上节我们知道在Vue被引入时，在Vue构造函数上注入了一些默认选项。</p>
+<p>在<a href="/posts/vue2-constructor.html">专栏第三篇</a>中，我们介绍了 Vue.extend函数。</p>
+<blockquote>
+<ol>
+<li><p>在render阶段生成虚拟节点时，会调用 Vue.extend 生成组件构造函数VueComponent，并存在 vnode上。</p>
+</li>
+<li><p>然后在update阶段开始挂载节点时，会调用组件构造函数 VueComponent来创建组件实例，再进行后续组件实例初始化、渲染等操作。</p>
+</li>
+</ol>
+</blockquote>
+<p>那么VueComponent构造函数作为Vue构造函数的子类，是不是也继承了它的默认选项呢？</p>
+<p>我们再次打开 Vue.extend 的源码一探究竟。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params">extendOptions</span>)&#123;</span><br><span class="line">    extendOptions = extendOptions || &#123;&#125;</span><br><span class="line">    <span class="comment">// 新增_Ctor属性 </span></span><br><span class="line">    <span class="keyword">const</span> cachedCtors = extendOptions.<span class="property">_Ctor</span> || (extendOptions.<span class="property">_Ctor</span> = &#123;&#125;)</span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Super</span> = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="keyword">const</span> <span class="title class_">Sub</span> = <span class="keyword">function</span> <span class="title function_">VueComponent</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">_init</span>();</span><br><span class="line">    &#125; </span><br><span class="line">    <span class="comment">// mergeOptions用于合并2个选项返回一个合并选项</span></span><br><span class="line">    <span class="title class_">Sub</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(<span class="title class_">Super</span>.<span class="property">options</span>, extendOptions)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>虽然我们不知道 mergeOptions的具体逻辑，但是我们很容易看出来，VueComponent构造函数上的 options属性合并了“父类“构造函数上的options属性以及extend方法传入的选项。</p>
+<blockquote>
+<p>在 VueComponent构造函数上新增了一个_Ctor属性，可以避免每次重新创建子类，提高性能，后面我们会专门说这里，这里不进行展开。</p>
+</blockquote>
+<p>所以我们可以得出一个结论：<mark class="tag-plugin colorful mark" color="orange">子类构造函数的选项继承了其父类构造函数的选项</mark>。</p>
+<p>举个例子：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">VueComponent</span> = <span class="title class_">Vue</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">    <span class="attr">template</span>:<span class="string">`&lt;div&gt;我是子类构造函数&lt;/div&gt;`</span></span><br><span class="line">&#125;); </span><br></pre></td></tr></table></figure></div></div>
+
+<p>此时 VueComponent.options 上既包含了自身传入的 template 选项，也包含了继承自Vue构造函数上的属性。</p>
+<blockquote>
+<p>这里需要注意的是，在合并父类构造函数的 options时，不同 option的合并策略不同，对于components、filter、directives等内置选项会合并到原型链中。 </p>
+</blockquote>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/3.png" data-fancybox="true"/></div></div>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/5.png" data-fancybox="true"/></div></div>
+
+<p>我们知道，VueComponent构造函数本身是具有再次扩展的能力的。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">VueComponentChild</span> = <span class="title class_">VueComponent</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">    <span class="title function_">data</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> &#123;</span><br><span class="line">            <span class="attr">name</span>:<span class="string">&quot;VueComponentChildConstructor&quot;</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>同理，<mark class="tag-plugin colorful mark" color="orange">VueComponentChildConstructor是VueComponent的子类，所以VueComponentChildConstructor就继承了VueComponent的 options</mark>。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/6.png" data-fancybox="true"/></div></div>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/7.png" data-fancybox="true"/></div></div>
+
+<h1 id="四、获取构造函数上的-options"><a href="#四、获取构造函数上的-options" class="headerlink" title="四、获取构造函数上的 options"></a>四、获取构造函数上的 options</h1><p>在Vue初始化操作执行时，使用 resolveConstructorOptions 函数来获取构造函数上的 options。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">resolveConstructorOptions</span>(<span class="params">Ctor</span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> options = <span class="title class_">Ctor</span>.<span class="property">options</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title class_">Ctor</span>.<span class="property">super</span>) &#123;</span><br><span class="line">        <span class="keyword">const</span> superOptions = <span class="title function_">resolveConstructorOptions</span>(<span class="title class_">Ctor</span>.<span class="property">super</span>)</span><br><span class="line">        <span class="keyword">const</span> cachedSuperOptions = <span class="title class_">Ctor</span>.<span class="property">superOptions</span></span><br><span class="line">        <span class="keyword">if</span> (superOptions !== cachedSuperOptions) &#123;</span><br><span class="line">            <span class="comment">// super option changed,</span></span><br><span class="line">            <span class="comment">// need to resolve new options.</span></span><br><span class="line">            <span class="title class_">Ctor</span>.<span class="property">superOptions</span> = superOptions</span><br><span class="line">            <span class="comment">// check if there are any late-modified/attached options (#4976)</span></span><br><span class="line">            <span class="keyword">const</span> modifiedOptions = <span class="title function_">resolveModifiedOptions</span>(<span class="title class_">Ctor</span>)</span><br><span class="line">            <span class="comment">// update base extend options</span></span><br><span class="line">            <span class="keyword">if</span> (modifiedOptions) &#123;</span><br><span class="line">                <span class="title function_">extend</span>(<span class="title class_">Ctor</span>.<span class="property">extendOptions</span>, modifiedOptions)</span><br><span class="line">            &#125;</span><br><span class="line">            options = <span class="title class_">Ctor</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(superOptions, <span class="title class_">Ctor</span>.<span class="property">extendOptions</span>)</span><br><span class="line">            <span class="keyword">if</span> (options.<span class="property">name</span>) &#123;</span><br><span class="line">                options.<span class="property">components</span>[options.<span class="property">name</span>] = <span class="title class_">Ctor</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> options;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>看到这么多代码，想必大家也是极其懵逼的。</p>
+<p>因为我们之前说过：</p>
+<ol>
+<li><mark class="tag-plugin colorful mark" color="orange">Vue构造函数的选项是在初始化时注入的</mark>。</li>
+<li><mark class="tag-plugin colorful mark" color="orange">VueComponent构造函数及其扩展子类的选项则是在extend方法中进行注入的</mark>。</li>
+</ol>
+<p>那直接使用<mark class="tag-plugin colorful mark" color="red">.options</mark>获取构造函数的选项不就行了，为什么还有这么一大段逻辑呢？</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">options</span> <span class="comment">// 获取Vue构造函数的选项</span></span><br><span class="line"><span class="title class_">VueComponent</span>.<span class="property">options</span> <span class="comment">// 获取VueComponent构造函数的选项</span></span><br></pre></td></tr></table></figure></div></div>
+
+<p>其实这一段逻辑主要是应对父类构造函数上选项变化的情况。</p>
+<h2 id="4-1-Ctor-super"><a href="#4-1-Ctor-super" class="headerlink" title="4.1 Ctor.super"></a>4.1 Ctor.super</h2><p>可以看到只有 Ctor.super 存在时才会走这一大段逻辑。</p>
+<p>那么 Ctor.super 指的是什么呢？</p>
+<p>在使用 extend生成子类构造函数时，会在子类构造函数上新增了一个 super属性，指向它的父类。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="title class_">Sub</span> = <span class="keyword">function</span> <span class="title function_">VueComponent</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="property">_init</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">let</span> <span class="title class_">Super</span> = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">    <span class="comment">// super即代表它的父类</span></span><br><span class="line">    <span class="title class_">Sub</span>[<span class="string">&#x27;super&#x27;</span>] = <span class="title class_">Super</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>所以如果存在 super 属性，则代表现在这里的 Ctor使用的是extend生成的VueComponent构造函数。所以这里分为 2 种情况：</p>
+<ol>
+<li><p>没有super属性，代表这是 Vue构造函数，直接返回 Vue.options 即可。</p>
+</li>
+<li><p>如果存在super属性，代表这是extend生成的 VueComponent构造函数，需要进行进一步判断。</p>
+</li>
+</ol>
+<p>因为 VueComponent.options的值是在 extend时合并了父类选项和extend传入选项的全新选项。</p>
+<p>所以如果后续Vue.options变化了无法获取最新的选项。</p>
+<h2 id="4-2-判断父类构造函数上的-options-是否变化"><a href="#4-2-判断父类构造函数上的-options-是否变化" class="headerlink" title="4.2 判断父类构造函数上的 options 是否变化"></a>4.2 判断父类构造函数上的 options 是否变化</h2><p>那么有哪些操作可以修改父类构造函数上的 options呢？</p>
+<p>比如使用 Vue.mixin api，这个 api就修改了Vue.options选项。</p>
+<p>这个时候就需要有一些逻辑可以更新 VueComponent上的 options。</p>
+<p>我们来看下 Vue是怎么更新的。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> superOptions = <span class="title function_">resolveConstructorOptions</span>(<span class="title class_">Ctor</span>.<span class="property">super</span>)</span><br><span class="line"><span class="keyword">const</span> cachedSuperOptions = <span class="title class_">Ctor</span>.<span class="property">superOptions</span></span><br><span class="line"><span class="keyword">if</span> (superOptions !== cachedSuperOptions) &#123;</span><br><span class="line">    <span class="comment">// 进入这个逻辑说明 Vue.options变化了</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>上面代码中如果 superOptions 不等于 cachedSuperOptions，即表示父类构造函数发生了变化。</p>
+<p>所以我们需要搞明白这 2 个值分别表示什么？</p>
+<ol>
+<li>superOptions是在resolveConstructorOptions中递归向上查找的，就是表示父类构造函数的最新选项。</li>
+<li>cachedSuperOptions 是指的构造函数上的 superOptions属性，这个属性是在 extend中定义的：</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">let</span> <span class="title class_">Super</span> = <span class="variable language_">this</span>;</span><br><span class="line">    <span class="keyword">let</span> <span class="title class_">Sub</span> = <span class="keyword">function</span> <span class="title function_">VueComponent</span>(<span class="params"></span>)&#123;</span><br><span class="line">        <span class="variable language_">this</span>.<span class="title function_">_init</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 这里存储的就是父类构造函数的 options</span></span><br><span class="line">    <span class="title class_">Sub</span>.<span class="property">superOptions</span> = <span class="title class_">Super</span>.<span class="property">options</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>所以这 2 个值都是指的父类构造函数，指向的是同一块内存地址，那么为什么会有不一样的情况呢？</p>
+<p>在 Vue 旧版本中曾经有一个相关的 bug。我们先来了解一下这个 bug：</p>
+<h3 id="4-2-1-Vue旧版本的-bug"><a href="#4-2-1-Vue旧版本的-bug" class="headerlink" title="4.2.1 Vue旧版本的 bug"></a>4.2.1 Vue旧版本的 bug</h3><p><a target="_blank" rel="noopener" href="https://github.com/vuejs/vue/issues/4976">github issue #4976</a></p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/8.png" data-fancybox="true"/></div></div>
+
+<p>这个bug的大概意思就是说：<mark class="tag-plugin colorful mark" color="orange">先生成VueComponent构造函数，然后再在构造函数上的 options 添加属性，在resolveComponentOptions函数执行后，后添加的属性消失了。</mark></p>
+<p>这是复现链接：<a target="_blank" rel="noopener" href="https://jsfiddle.net/vvxLyLvq/2/">options消失</a>。</p>
+<p>我们这里看一下代码：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="title class_">Test</span> = <span class="title class_">Vue</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">  <span class="attr">foo</span>: <span class="string">&#x27;Foo&#x27;</span></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Inject options later</span></span><br><span class="line"><span class="comment">// vue-loader and vue-hot-reload-api are doing like this</span></span><br><span class="line"><span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">computed</span> = &#123; <span class="attr">$style</span>: &#123; <span class="attr">test</span>: <span class="string">&#x27;abcde&#x27;</span> &#125; &#125;</span><br><span class="line"><span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">beforeCreate</span> = [</span><br><span class="line">  <span class="function">() =&gt;</span> &#123; <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;Should be printed&#x27;</span>) &#125;</span><br><span class="line">]</span><br><span class="line"><span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">render</span> = <span class="keyword">function</span> (<span class="params">h</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">h</span>(<span class="string">&#x27;div&#x27;</span>, <span class="string">&#x27;$style: &#x27;</span> + <span class="variable language_">this</span>.<span class="property">$style</span>)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Update super constructor&#x27;s options</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">mixin</span>(&#123;&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">	<span class="attr">render</span>: <span class="function"><span class="params">h</span> =&gt;</span> <span class="title function_">h</span>(<span class="title class_">Test</span>)</span><br><span class="line">&#125;).$mount(<span class="string">&#x27;#app&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// This is retained</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">foo</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// Should be appear but not</span></span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">computed</span>)</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="title class_">Test</span>.<span class="property">options</span>.<span class="property">beforeCreate</span>)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>可以看到首先使用 Vue.extend 生成了一个 Test构造函数。</p>
+<p>然后在 Test的 options上新增了 2 个属性。</p>
+<p>执行完Vue.mixin后，先前定义的<mark class="tag-plugin colorful mark" color="orange">computed、beforeCreate</mark>2个属性不见了。</p>
+<h3 id="4-2-2-Vue-mixin"><a href="#4-2-2-Vue-mixin" class="headerlink" title="4.2.2 Vue.mixin"></a>4.2.2 Vue.mixin</h3><p>那么这个 Vue.mixin究竟是干了啥呢？</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">mixin</span> = <span class="keyword">function</span> (<span class="params">mixin: <span class="built_in">Object</span></span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(<span class="variable language_">this</span>.<span class="property">options</span>, mixin)</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>可以看到mixin函数仅仅是改变了构造函数上的options。</p>
+<p>但是 mergeOptions 会返回一个新的对象，导致构造函数的 options 发生了变化。</p>
+<p>也就导致了前面说的 <mark class="tag-plugin colorful mark" color="orange">superOptions !== cachedSuperOptions</mark> 情况的发生。</p>
+<p>因为 superOptions 获取的是当前最新的选项，也就是 mixin 执行过的合并选项。</p>
+<p>而 cachedSuperOptions 则是在执行 Vue.extend 时当时的父类构造函数的选项。</p>
+<h3 id="4-2-3-旧版本Vue中-resolveConstructorOptions-的逻辑是什么？"><a href="#4-2-3-旧版本Vue中-resolveConstructorOptions-的逻辑是什么？" class="headerlink" title="4.2.3 旧版本Vue中 resolveConstructorOptions 的逻辑是什么？"></a>4.2.3 旧版本Vue中 resolveConstructorOptions 的逻辑是什么？</h3><p>但是 Vue.mixin 仅仅是更改了 Vue.options。</p>
+<p>应该不会将VueComponent构造函数自身添加的属性清除。</p>
+<p>所以应该是 Vue内部对其做了一些特殊处理。</p>
+<p>我们打开 <a target="_blank" rel="noopener" href="https://github.com/vuejs/vue/blob/v2.1.10/src/core/instance/init.js">Vue 2.1.10</a> 版本的相关源码。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">resolveConstructorOptions</span> (<span class="params">Ctor</span>) &#123;</span><br><span class="line"> <span class="keyword">let</span> options = <span class="title class_">Ctor</span>.<span class="property">options</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title class_">Ctor</span>.<span class="property">super</span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> superOptions = <span class="title class_">Ctor</span>.<span class="property">super</span>.<span class="property">options</span></span><br><span class="line">    <span class="keyword">const</span> cachedSuperOptions = <span class="title class_">Ctor</span>.<span class="property">superOptions</span></span><br><span class="line">    <span class="keyword">const</span> extendOptions = <span class="title class_">Ctor</span>.<span class="property">extendOptions</span></span><br><span class="line">    <span class="keyword">if</span> (superOptions !== cachedSuperOptions) &#123;</span><br><span class="line">      <span class="comment">// super option changed</span></span><br><span class="line">      <span class="title class_">Ctor</span>.<span class="property">superOptions</span> = superOptions</span><br><span class="line">      extendOptions.<span class="property">render</span> = options.<span class="property">render</span></span><br><span class="line">      extendOptions.<span class="property">staticRenderFns</span> = options.<span class="property">staticRenderFns</span></span><br><span class="line">      extendOptions.<span class="property">_scopeId</span> = options.<span class="property">_scopeId</span></span><br><span class="line">      options = <span class="title class_">Ctor</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(superOptions, extendOptions)</span><br><span class="line">      <span class="keyword">if</span> (options.<span class="property">name</span>) &#123;</span><br><span class="line">        options.<span class="property">components</span>[options.<span class="property">name</span>] = <span class="title class_">Ctor</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> options</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<ol>
+<li>获取了父构造函数的当前的 options：<mark class="tag-plugin colorful mark" color="orange">const superOptions = Ctor.super.options</mark>。</li>
+<li>获取了父构造函数执行extend时的options：<mark class="tag-plugin colorful mark" color="orange">const cachedSuperOptions = Ctor.superOptions</mark>。</li>
+<li>获取了子构造函数 extend时传入的选项<mark class="tag-plugin colorful mark" color="orange">extendOptions</mark>。</li>
+<li>因为执行了mixin，导致父构造函数中的 options发生了变化，即<mark class="tag-plugin colorful mark" color="orange">superOptions !== cachedSuperOptions</mark>，然后继续执行内部的逻辑。</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options = <span class="title class_">Ctor</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(superOptions, extendOptions)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>可以看到它是将获取到的父构造函数 options和当初 extend传入的 options合并，然后重新赋值给了 Ctor.options。</p>
+<p>所以后添加的<code>computed</code>、<code>beforeCreate</code>就消失了，因为指向了不同的内存空间。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/9.png" data-fancybox="true"/></div></div>
+
+<h3 id="4-2-4-总结"><a href="#4-2-4-总结" class="headerlink" title="4.2.4 总结"></a>4.2.4 总结</h3><p>通过上面几节的学习，我们知道了为什么需要判断父类构造函数的变化。</p>
+<p>我们系统提供了全局注入的 API：<mark class="tag-plugin colorful mark" color="orange">Vue.mixin</mark>。</p>
+<p>使用这个函数可以向全局注入一些选项。</p>
+<p>而实际上就是通过改变Vue构造函数上的option，再通过这里的变更逻辑重新赋值到 VueComponent.options上，这样生成的实例就可以访问到 Vue.mixin注入的属性了。</p>
+<h2 id="4-3-使用resolveModifiedOptions获取更改的属性"><a href="#4-3-使用resolveModifiedOptions获取更改的属性" class="headerlink" title="4.3 使用resolveModifiedOptions获取更改的属性"></a>4.3 使用resolveModifiedOptions获取更改的属性</h2><p>应对上面说的这个 bug，Vue官方也对这resolveConstructorOptions方法进行了调整。</p>
+<p>针对VueComponent构造函数上可能存在的options更改进行了处理。</p>
+<ol>
+<li>首先在 Vue.extends中保存了VueComponent的当时的options。</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">    <span class="comment">// 存储了当时的 options</span></span><br><span class="line">    <span class="title class_">Sub</span>.<span class="property">sealedOptions</span> = <span class="title function_">extend</span>(&#123;&#125;, <span class="title class_">Sub</span>.<span class="property">options</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<ol start="2">
+<li>使用resolveModifiedOptions查找修改的option部分</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">resolveModifiedOptions</span>(<span class="params">Ctor</span>)&#123;</span><br><span class="line">  <span class="keyword">let</span> modified</span><br><span class="line">  <span class="keyword">const</span> latest = <span class="title class_">Ctor</span>.<span class="property">options</span></span><br><span class="line">  <span class="keyword">const</span> sealed = <span class="title class_">Ctor</span>.<span class="property">sealedOptions</span></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">const</span> key <span class="keyword">in</span> latest) &#123;</span><br><span class="line">    <span class="keyword">if</span> (latest[key] !== sealed[key]) &#123;</span><br><span class="line">      <span class="keyword">if</span> (!modified) modified = &#123;&#125;</span><br><span class="line">      modified[key] = latest[key]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> modified</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<ol start="3">
+<li>将修改的 options合进 extendOptions</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (modifiedOptions) &#123;</span><br><span class="line">    <span class="title function_">extend</span>(<span class="title class_">Ctor</span>.<span class="property">extendOptions</span>, modifiedOptions)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<ol start="4">
+<li>合并 extendOptions以及 superOptions</li>
+</ol>
+<p>extendOptions是最新的子类构造函数 options。</p>
+<p>superOptions是最新的父类构造函数 options。</p>
+<p>将两者合并就不会有问题了。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">options = <span class="title class_">Ctor</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(superOptions, <span class="title class_">Ctor</span>.<span class="property">extendOptions</span>)</span><br></pre></td></tr></table></figure></div></div>
+
+<h2 id="5-4-总结"><a href="#5-4-总结" class="headerlink" title="5.4 总结"></a>5.4 总结</h2><p>这个函数可以获取到构造函数上最新的options。</p>
+<p>同时可以更新子类构造函数和父类构造函数上的<code>superOptions、extendOptions以及 options</code>。</p>
+<h1 id="五、mergeOptions的合并场景"><a href="#五、mergeOptions的合并场景" class="headerlink" title="五、mergeOptions的合并场景"></a>五、mergeOptions的合并场景</h1><p>mergeOptions在实例化时用于合并构造函数的 options和传入的 options。</p>
+<p>mergeOptions 是实现继承和实例化的核心函数。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">mergeOptions</span>(<span class="params">parent,child,vm</span>)&#123;</span><br><span class="line">  <span class="comment">// parent代表合并父类</span></span><br><span class="line">  <span class="comment">// child代表合并子类</span></span><br><span class="line">  <span class="comment">// vm代表当前的 vm实例</span></span><br><span class="line">  <span class="comment">// 如果vm实例存在，则表示这是在实例化时调用的</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>mergeOptions函数不仅仅用于生成实例的$options属性。</p>
+<p>也可以用于子类构造函数和父类构造函数的选项合并。</p>
+<p>在多个场景都是用了这个函数。</p>
+<h2 id="5-1-Vue-extend"><a href="#5-1-Vue-extend" class="headerlink" title="5.1 Vue.extend"></a>5.1 Vue.extend</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params">extendOptions</span>)&#123;</span><br><span class="line">  <span class="comment">// 省略部分代码</span></span><br><span class="line">  <span class="title class_">Sub</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(<span class="title class_">Super</span>.<span class="property">options</span>,extendOptions)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>前面我们已经多次提及这个方法了。</p>
+<p>这里的 mergeOptions 用于合并父类构造函数选项和传入的选项，生成子类构造函数的选项。</p>
+<p>在这里：<mark class="tag-plugin colorful mark" color="orange">父类构造函数的选项相当于父类，而传入的选项相当于子类</mark>。不传入vm实例。</p>
+<h2 id="5-2-Vue-mixin"><a href="#5-2-Vue-mixin" class="headerlink" title="5.2 Vue.mixin"></a>5.2 Vue.mixin</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">mixin</span> = <span class="keyword">function</span> (<span class="params">mixin: <span class="built_in">Object</span></span>) &#123;</span><br><span class="line">  <span class="variable language_">this</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(<span class="variable language_">this</span>.<span class="property">options</span>, mixin)</span><br><span class="line">  <span class="keyword">return</span> <span class="variable language_">this</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>前面我们也多次提到这个方法，这个方法主要是用于合并构造函数的options，和传入mixin选项，生成全新的构造函数的 options。</p>
+<p>在这里：<mark class="tag-plugin colorful mark" color="orange">构造函数的选项相当于父类，而传入的 mixin选项相当于子类</mark>。不传入vm实例。</p>
+<h2 id="5-3-vm-options"><a href="#5-3-vm-options" class="headerlink" title="5.3 vm.$options"></a>5.3 vm.$options</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vm.<span class="property">$options</span> = <span class="title function_">mergeOptions</span>(</span><br><span class="line">  <span class="title function_">resolveConstructorOptions</span>(vm.<span class="property">constructor</span> <span class="keyword">as</span> any),</span><br><span class="line">  options || &#123;&#125;,</span><br><span class="line">  vm</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>该方法用于在实例化的时候生成实例的$options属性。这个方法主要用于合并实例对应的构造函数的选项和传入的选项，生成一个完整地实例选项。</p>
+<p>在这里：<mark class="tag-plugin colorful mark" color="orange">构造函数的选项相当于父类，而实例化时传入的 mixin选项相当于子类`。`此时传入vm实例</mark>。</p>
+<h1 id="六、合并策略"><a href="#六、合并策略" class="headerlink" title="六、合并策略"></a>六、合并策略</h1><p>在实例化的时候，会将构造函数上的选项和用户传入的选项进行合并，将最终的合并选项注入到实例中。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">vm.<span class="property">$options</span> = <span class="title function_">mergeOptions</span>(</span><br><span class="line">  <span class="title function_">resolveConstructorOptions</span>(vm.<span class="property">constructor</span> <span class="keyword">as</span> any),</span><br><span class="line">  options || &#123;&#125;,</span><br><span class="line">  vm</span><br><span class="line">)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>mergeOptions函数用于合并2个选项，并返回一个新的选项。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">mergeOptions</span>(<span class="params">parent,child</span>)&#123;</span><br><span class="line">    <span class="comment">// 省略部分代码</span></span><br><span class="line">    <span class="keyword">let</span> key</span><br><span class="line">    <span class="keyword">const</span> options = &#123;&#125;;</span><br><span class="line">    <span class="keyword">for</span>(key <span class="keyword">in</span> parent)&#123;</span><br><span class="line">        <span class="title function_">mergeField</span>(key)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (key <span class="keyword">in</span> child) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!<span class="title function_">hasOwn</span>(parent, key)) &#123;</span><br><span class="line">            <span class="title function_">mergeField</span>(key)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">function</span> <span class="title function_">mergeField</span>(<span class="params">key</span>)&#123;</span><br><span class="line">        <span class="keyword">const</span> strat = strats[key] || defaultStrat;</span><br><span class="line">        options[key] = <span class="title function_">strat</span>(parent[key], child[key], vm, key)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> options;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>大家可以先思考一下合并2个对象需要注意些什么呢？</p>
+<p>假设构造函数的options和传入的options中都存在data，这个时候合并的是：</p>
+<ol>
+<li><mark class="tag-plugin colorful mark" color="red">直接覆盖？</mark></li>
+<li><mark class="tag-plugin colorful mark" color="red">如果覆盖的话是使用构造函数的data还是传入的data?</mark></li>
+<li><mark class="tag-plugin colorful mark" color="red">还是将data中的内容再进行合并呢？</mark></li>
+</ol>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/10.png" data-fancybox="true"/></div></div>
+<p>实际上不同的选项中的都存在自己的合并逻辑。</p>
+<p>比如data选项和生命周期钩子选项合并策略肯定是不同的。</p>
+<h2 id="6-1-自定义策略"><a href="#6-1-自定义策略" class="headerlink" title="6.1 自定义策略"></a>6.1 自定义策略</h2><p>在Vue中，可以自己定义不同的合并策略。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以配置合并策略</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="property">config</span>.<span class="property">optionMergeStrategies</span> = &#123;</span><br><span class="line">  <span class="attr">customArray</span>:[]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>配置完以后，就可以在<mark class="tag-plugin colorful mark" color="yellow">optionMergeStrategies</mark>获取用户配置的策略。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 源码中定义策略变量首先获取optionMergeStrategies 如果没有配置 optionMergeStrategies 默认是一个空对象</span></span><br><span class="line"><span class="keyword">const</span> strats = config.<span class="property">optionMergeStrategies</span></span><br></pre></td></tr></table></figure></div></div> 
+
+<p>然后再在 strats这个对象上添加属性，定义不同的策略。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// data的合并策略</span></span><br><span class="line">strats.<span class="property">data</span> = <span class="function">(<span class="params">parentVal,ChildVal,vm</span>)=&gt;</span>&#123;</span><br><span class="line">  <span class="comment">// xxx</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// props的合并策略</span></span><br><span class="line">strats.<span class="property">props</span> = <span class="function">(<span class="params">parentVal,ChildVal,vm</span>)=&gt;</span>&#123;</span><br><span class="line">  <span class="comment">// xxx</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// computed的合并策略</span></span><br><span class="line">strats.<span class="property">computed</span> = <span class="function">(<span class="params">parentVal,ChildVal,vm</span>)=&gt;</span>&#123;</span><br><span class="line">  <span class="comment">// xxx</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+
+<blockquote>
+<p>由于strats是一个对象，所以你如果定义了和内部定义的策略相同的选项，会被覆盖掉。也就意味着你无法重新定义 data、computed、props等内部策略</p>
+</blockquote>
+<p>但是你可以自定义自己的选项。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="title class_">Vue</span> <span class="keyword">from</span> <span class="string">&quot;vue/dist/vue.esm.browser&quot;</span> </span><br><span class="line"><span class="keyword">import</span> <span class="title class_">Test</span> <span class="keyword">from</span> <span class="string">&quot;./Test.vue&quot;</span></span><br><span class="line"> </span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">mixin</span>(&#123;</span><br><span class="line">    <span class="attr">customArray</span>:[<span class="number">1</span>,<span class="number">3</span>,<span class="number">5</span>,<span class="number">8</span>,<span class="number">9</span>]</span><br><span class="line">&#125;)</span><br><span class="line"> </span><br><span class="line"><span class="keyword">const</span> vm = <span class="keyword">new</span> <span class="title class_">Vue</span>(&#123;</span><br><span class="line">    <span class="attr">render</span>: <span class="function"><span class="params">h</span>=&gt;</span><span class="title function_">h</span>(<span class="title class_">Test</span>),</span><br><span class="line">    <span class="attr">customArray</span>: [<span class="number">1</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">7</span>]</span><br><span class="line">&#125;).$mount(<span class="string">&quot;#app&quot;</span>)  </span><br><span class="line"> </span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(vm);</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>比如你想要实现你自定义的 customArray选项 数组内容合并并且去重，可以使用使用<code>optionMergeStrategies</code>:</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// parentVal代表构造函数上的选项值， childVal代表传入的选项值</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="property">config</span>.<span class="property">optionMergeStrategies</span>.<span class="property">customArray</span> = <span class="function">(<span class="params">parentVal,childVal</span>)=&gt;</span>&#123; </span><br><span class="line">    <span class="comment">// 其他Vue组件没有定义不进行处理</span></span><br><span class="line">    <span class="keyword">if</span>(!childVal) <span class="keyword">return</span> [];</span><br><span class="line">    <span class="keyword">return</span> <span class="title class_">Array</span>.<span class="title function_">from</span>(<span class="keyword">new</span> <span class="title class_">Set</span>([...parentVal,...childVal]))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>我们打印一下这个实例，可以发现已经成功了。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/11.png" data-fancybox="true"/></div></div>
+
+<h2 id="6-2-默认的合并策略"><a href="#6-2-默认的合并策略" class="headerlink" title="6.2 默认的合并策略"></a>6.2 默认的合并策略</h2><p>由于可以选项高度可自定义，所以 Vue中内置了一套默认的合并策略。</p>
+<p>主要应对没有设置对应策略的合并情况。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> defaultStrat = <span class="keyword">function</span> (<span class="params">parentVal, childVal</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> childVal === <span class="literal">undefined</span> ? parentVal : childVal</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>可以看出来默认的合并策略是传入的options直接对构造函数的options进行强制覆盖（如果存在的话）。</p>
+<h2 id="6-3-el、propsData的合并策略"><a href="#6-3-el、propsData的合并策略" class="headerlink" title="6.3 el、propsData的合并策略"></a>6.3 el、propsData的合并策略</h2><p>可以看出来 el、propsData的合并策略和默认策略一样，只是多了一个开发环境的报错提示。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">  strats.<span class="property">el</span> = strats.<span class="property">propsData</span> = <span class="keyword">function</span> (<span class="params"></span></span><br><span class="line"><span class="params">    parent: any,</span></span><br><span class="line"><span class="params">    child: any,</span></span><br><span class="line"><span class="params">    vm: any,</span></span><br><span class="line"><span class="params">    key: any</span></span><br><span class="line"><span class="params">  </span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!vm) &#123;</span><br><span class="line">      <span class="title function_">warn</span>(</span><br><span class="line">        <span class="string">`option &quot;<span class="subst">$&#123;key&#125;</span>&quot; can only be used during instance `</span> +</span><br><span class="line">          <span class="string">&#x27;creation with the `new` keyword.&#x27;</span></span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">defaultStrat</span>(parent, child)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>那么这个报错是什么意思呢？</p>
+<blockquote>
+<p>策略函数的的第三个参数vm代表vue实例。</p>
+<p>而这个vm同时也是mergeOptions的第三个参数。</p>
+<p>而 mergeOptions作为一个通用函数，不仅只是在实例初始化的时候被调用，同时也在Vue.extend、Vue.mixin等多个方法中被使用，这个时候还没有生成 vm实例，所以 vm为空。而 el属性、propsData属性是属于跟实例相关的属性，所以如果在Vue.mixin等方法中注入 el属性，则会报错。</p>
+</blockquote>
+<p>综上所述，这行报错的意思就是禁止在除了实例化之外的地方注入 el选项。</p>
+<p>比如调用：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="title function_">mixin</span>(&#123;</span><br><span class="line">  <span class="attr">el</span>:<span class="string">&quot;#select&quot;</span></span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>控制台就会报错：</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/12.png" data-fancybox="true"/></div></div>
+
+<h2 id="6-4-data的合并策略"><a href="#6-4-data的合并策略" class="headerlink" title="6.4 data的合并策略"></a>6.4 data的合并策略</h2><p>data选项在 Vue中无疑是使用最频繁的选项之一。</p>
+<p>所以它的合并策略相当复杂。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">strats.<span class="property">data</span> = <span class="keyword">function</span> (<span class="params"></span></span><br><span class="line"><span class="params">  parentVal: any,</span></span><br><span class="line"><span class="params">  childVal: any,</span></span><br><span class="line"><span class="params">  vm?: Component</span></span><br><span class="line"><span class="params"></span>): <span class="title class_">Function</span> | <span class="literal">null</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (!vm) &#123;</span><br><span class="line">    <span class="keyword">if</span> (childVal &amp;&amp; <span class="keyword">typeof</span> childVal !== <span class="string">&#x27;function&#x27;</span>) &#123;</span><br><span class="line">      __DEV__ &amp;&amp;</span><br><span class="line">        <span class="title function_">warn</span>(</span><br><span class="line">          <span class="string">&#x27;The &quot;data&quot; option should be a function &#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;that returns a per-instance value in component &#x27;</span> +</span><br><span class="line">            <span class="string">&#x27;definitions.&#x27;</span>,</span><br><span class="line">          vm</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line">      <span class="keyword">return</span> parentVal</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">mergeDataOrFn</span>(parentVal, childVal)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">mergeDataOrFn</span>(parentVal, childVal, vm)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<h3 id="6-4-1-在定义时报错"><a href="#6-4-1-在定义时报错" class="headerlink" title="6.4.1 在定义时报错"></a>6.4.1 在定义时报错</h3><p>我们知道通常在组件中，建议将 data定义成函数，因为如果将 data定义成普通对象，在该组件被引入到多处时，由于 extend函数内部会缓存这个构造函数，所以 data中的数据可能会被多个组件共享，导致 bug的产生。</p>
+<p>childVal在这里代表传入的选项，即在组件中定义的选项。</p>
+<p>所以会提示你需要将 data定义成函数，并且依旧调用 mergeDataOrFn。</p>
+<p>在执行构造函数时创建子类构造函数时，虽然已经有了 vm了，但是并没有传入 mergeOptions。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="title class_">Vue</span>.<span class="property">extend</span> = <span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">  <span class="title class_">Sub</span>.<span class="property">options</span> = <span class="title function_">mergeOptions</span>(<span class="title class_">Super</span>.<span class="property">options</span>, extendOptions);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>所以这个报错是在创建子类构造函数时进行提示的。</p>
+<h3 id="6-4-2-mergeDataOrFn"><a href="#6-4-2-mergeDataOrFn" class="headerlink" title="6.4.2 mergeDataOrFn"></a>6.4.2 mergeDataOrFn</h3><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">mergeDataOrFn</span>(<span class="params"></span></span><br><span class="line"><span class="params">    parentVal,</span></span><br><span class="line"><span class="params">    childVal,</span></span><br><span class="line"><span class="params">    vm</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">function</span> <span class="title function_">mergedInstanceDataFn</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="comment">// instance merge</span></span><br><span class="line">        <span class="keyword">const</span> instanceData = <span class="title function_">isFunction</span>(childVal)</span><br><span class="line">            ? childVal.<span class="title function_">call</span>(vm, vm)</span><br><span class="line">            : childVal</span><br><span class="line">        <span class="keyword">const</span> defaultData = <span class="title function_">isFunction</span>(parentVal)</span><br><span class="line">            ? parentVal.<span class="title function_">call</span>(vm, vm)</span><br><span class="line">            : parentVal</span><br><span class="line">        <span class="keyword">if</span> (instanceData) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="title function_">mergeData</span>(instanceData, defaultData)</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> defaultData</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>该函数生成了一个合并函数。</p>
+<mark class="tag-plugin colorful mark" color="orange">当这个合并函数执行的时候将获取构造函数的上的data和传入的data</mark>
+
+<ol>
+<li>当传入的选项中存在 data，则调用mergeData合并 2 个data并返回。</li>
+<li>当传入的选项中不存在 data时，则直接返回构造函数上的 data。</li>
+</ol>
+<h3 id="6-4-3-mergeData"><a href="#6-4-3-mergeData" class="headerlink" title="6.4.3 mergeData"></a>6.4.3 mergeData</h3><p>当构造函数的选项和传入的选项都存在 data时，需要调用 mergeData对 2 个选项进行合并。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">mergeData</span>(<span class="params"></span></span><br><span class="line"><span class="params">  to,</span></span><br><span class="line"><span class="params">  <span class="keyword">from</span>,</span></span><br><span class="line"><span class="params">  recursive = <span class="literal">true</span></span></span><br><span class="line"><span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">if</span> (!<span class="keyword">from</span>) <span class="keyword">return</span> to</span><br><span class="line">  <span class="keyword">let</span> key, toVal, fromVal</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> keys = hasSymbol</span><br><span class="line">    ? <span class="title class_">Reflect</span>.<span class="title function_">ownKeys</span>(<span class="keyword">from</span>)</span><br><span class="line">    : <span class="title class_">Object</span>.<span class="title function_">keys</span>(<span class="keyword">from</span>)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; keys.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    key = keys[i]</span><br><span class="line">    <span class="comment">// in case the object is already observed...</span></span><br><span class="line">    <span class="keyword">if</span> (key === <span class="string">&#x27;__ob__&#x27;</span>) <span class="keyword">continue</span></span><br><span class="line">    toVal = to[key]</span><br><span class="line">    fromVal = <span class="keyword">from</span>[key]</span><br><span class="line">    <span class="keyword">if</span> (!recursive || !<span class="title function_">hasOwn</span>(to, key)) &#123;</span><br><span class="line">      <span class="title function_">set</span>(to, key, fromVal)</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (</span><br><span class="line">      toVal !== fromVal &amp;&amp;</span><br><span class="line">      <span class="title function_">isPlainObject</span>(toVal) &amp;&amp;</span><br><span class="line">      <span class="title function_">isPlainObject</span>(fromVal)</span><br><span class="line">    ) &#123;</span><br><span class="line">      <span class="title function_">mergeData</span>(toVal, fromVal)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> to</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>这个函数的主要作用是合并两个对象的属性，可以用于初始化组件的数据对象，或者在组件的 created 钩子中合并父组件和子组件的数据。通过 recursive 参数，它可以灵活地进行浅合并或深度合并。</p>
+<p>由于其中涉及到响应式数据的内容，所以不在这里深入讨论。</p>
+<p>后面会单独出响应式数据的内容。</p>
+<h2 id="6-5-生命周期的合并策略"><a href="#6-5-生命周期的合并策略" class="headerlink" title="6.5 生命周期的合并策略"></a>6.5 生命周期的合并策略</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="variable constant_">LIFECYCLE_HOOKS</span> = [</span><br><span class="line">  <span class="string">&#x27;beforeCreate&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;created&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;beforeMount&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;mounted&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;beforeUpdate&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;updated&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;beforeDestroy&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;destroyed&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;activated&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;deactivated&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;errorCaptured&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;serverPrefetch&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;renderTracked&#x27;</span>,</span><br><span class="line">  <span class="string">&#x27;renderTriggered&#x27;</span></span><br><span class="line">]</span><br><span class="line"></span><br><span class="line"><span class="variable constant_">LIFECYCLE_HOOKS</span>.<span class="title function_">forEach</span>(<span class="function"><span class="params">hook</span> =&gt;</span> &#123;</span><br><span class="line">  strats[hook] = mergeLifecycleHook</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 生命周期的合并策略</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">mergeLifecycleHook</span>(<span class="params"></span></span><br><span class="line"><span class="params">  parentVal,</span></span><br><span class="line"><span class="params">  childVal</span></span><br><span class="line"><span class="params"></span>)&#123;</span><br><span class="line">  <span class="keyword">const</span> res = childVal</span><br><span class="line">    ? parentVal</span><br><span class="line">      ? parentVal.<span class="title function_">concat</span>(childVal)</span><br><span class="line">      : <span class="title function_">isArray</span>(childVal)</span><br><span class="line">      ? childVal</span><br><span class="line">      : [childVal]</span><br><span class="line">    : parentVal</span><br><span class="line">  <span class="keyword">return</span> res ? <span class="title function_">dedupeHooks</span>(res) : res</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">function</span> <span class="title function_">dedupeHooks</span>(<span class="params">hooks</span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> res = []</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; hooks.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (res.<span class="title function_">indexOf</span>(hooks[i]) === -<span class="number">1</span>) &#123;</span><br><span class="line">      res.<span class="title function_">push</span>(hooks[i])</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>上面这个三元表达式还是比较复杂的。</p>
+<ol>
+<li>如果子类和父类都拥有相同的钩子选项，则将子类选项和父类选项合并。</li>
+<li>如果父类不存在钩子选项，子类存在时，则以数组形式返回子类钩子选项。</li>
+<li>当子类不存在钩子选项时，则以父类选项返回。</li>
+<li>子父合并时，是将子类选项放在数组的末尾，这样在执行钩子时，永远是父类选项优先于子类选项执行。</li>
+</ol>
+<p>简单总结一下：<mark class="tag-plugin colorful mark" color="orange">对于生命周期钩子选项，子类和父类相同的选项将合并成数组，这样在执行子类钩子函数时，父类钩子选项也会执行，并且父会优先于子执行。</mark></p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/mergeoptions/13.png" data-fancybox="true"/></div></div>
+
+<h2 id="6-6-组件、指令、过滤器的合并策略"><a href="#6-6-组件、指令、过滤器的合并策略" class="headerlink" title="6.6 组件、指令、过滤器的合并策略"></a>6.6 组件、指令、过滤器的合并策略</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">const</span> <span class="variable constant_">ASSET_TYPES</span> = [<span class="string">&#x27;component&#x27;</span>, <span class="string">&#x27;directive&#x27;</span>, <span class="string">&#x27;filter&#x27;</span>]</span><br><span class="line"></span><br><span class="line"><span class="variable constant_">ASSET_TYPES</span>.<span class="title function_">forEach</span>(<span class="keyword">function</span> (<span class="params">type</span>) &#123;</span><br><span class="line">  strats[type + <span class="string">&#x27;s&#x27;</span>] = mergeAssets</span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">mergeAssets</span>(<span class="params"></span></span><br><span class="line"><span class="params">  parentVal,</span></span><br><span class="line"><span class="params">  childVal,</span></span><br><span class="line"><span class="params">  vm,</span></span><br><span class="line"><span class="params">  key</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">  <span class="keyword">const</span> res = <span class="title class_">Object</span>.<span class="title function_">create</span>(parentVal || <span class="literal">null</span>)</span><br><span class="line">  <span class="keyword">if</span> (childVal) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">extend</span>(res, childVal)</span><br><span class="line">  &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>很明显 组件、指令、过滤器的合并策略就是直接对构造函数的选项进行覆盖。</p>
+<mark class="tag-plugin colorful mark" color="orange">Object.create()方法创建一个新对象，使用创建的对象来提供新创建的对象的__proto__。</mark>
+
+<p>这意味着这个合并策略让内置的一些资源选项变成了原型链的形式。</p>
+<p>这样子类必须通过原型链才能查找并使用内置的组件和内置指令。</p>
+<h2 id="6-7-watch的合并策略"><a href="#6-7-watch的合并策略" class="headerlink" title="6.7 watch的合并策略"></a>6.7 watch的合并策略</h2><p>在使用 Vue 进行开发时，我们经常需要对数据变化做出响应，尤其是当涉及到需要执行异步操作或计算成本较高的任务时，watch 选项就显得尤为高效。</p>
+<p>关于 watch 选项的合并策略，它与生命周期钩子的合并有相似之处：如果父组件和子组件有相同的观察字段，它们的 watch 选项将被合并为一个数组。</p>
+<p>当监测到字段变化时，父类和子类的监听代码将被同时触发。</p>
+<p>与生命周期钩子的处理方式不同，watch 选项在合并后的数组中可以呈现多种形式：它们可以是包含选项的对象，也可以是回调函数，或者是方法名的字符串。</p>
+<p>这种灵活性使得 watch 选项能够适应更多的使用场景，无论是简单的数据变化监听还是复杂的异步操作处理。</p>
+<p>通过这种方式，Vue 允许开发者在组件和混入中灵活地定义和合并 watch 选项，从而实现精细化的数据监控和管理。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">strats.<span class="property">watch</span> = <span class="keyword">function</span> (<span class="params">parentVal,childVal,vm,key</span>) &#123;</span><br><span class="line">    <span class="comment">//火狐浏览器在Object的原型上拥有watch方法，这里对这一现象做了兼容</span></span><br><span class="line">    <span class="comment">// var nativeWatch = (&#123;&#125;).watch;</span></span><br><span class="line">    <span class="keyword">if</span> (parentVal === nativeWatch) &#123; parentVal = <span class="literal">undefined</span>; &#125;</span><br><span class="line">    <span class="keyword">if</span> (childVal === nativeWatch) &#123; childVal = <span class="literal">undefined</span>; &#125;</span><br><span class="line">    <span class="comment">// 没有子，则默认用父选项</span></span><br><span class="line">    <span class="keyword">if</span> (!childVal) &#123; <span class="keyword">return</span> <span class="title class_">Object</span>.<span class="title function_">create</span>(parentVal || <span class="literal">null</span>) &#125;</span><br><span class="line">    &#123;</span><br><span class="line">      <span class="comment">// 保证watch选项是一个对象</span></span><br><span class="line">      <span class="title function_">assertObjectType</span>(key, childVal, vm);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 没有父则直接用子选项</span></span><br><span class="line">    <span class="keyword">if</span> (!parentVal) &#123; <span class="keyword">return</span> childVal &#125;</span><br><span class="line">    <span class="keyword">var</span> ret = &#123;&#125;;</span><br><span class="line">    <span class="title function_">extend</span>(ret, parentVal);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">var</span> key$1 <span class="keyword">in</span> childVal) &#123;</span><br><span class="line">      <span class="keyword">var</span> parent = ret[key$1];</span><br><span class="line">      <span class="keyword">var</span> child = childVal[key$1];</span><br><span class="line">      <span class="comment">// 父的选项先转换成数组</span></span><br><span class="line">      <span class="keyword">if</span> (parent &amp;&amp; !<span class="title class_">Array</span>.<span class="title function_">isArray</span>(parent)) &#123;</span><br><span class="line">        parent = [parent];</span><br><span class="line">      &#125;</span><br><span class="line">      ret[key$1] = parent</span><br><span class="line">        ? parent.<span class="title function_">concat</span>(child)</span><br><span class="line">        : <span class="title class_">Array</span>.<span class="title function_">isArray</span>(child) ? child : [child];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>下面结合具体的例子看合并结果：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Parent</span> = <span class="title class_">Vue</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">  <span class="attr">watch</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;test&#x27;</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;parent change&#x27;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Child</span> = <span class="title class_">Parent</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">  <span class="attr">watch</span>: &#123;</span><br><span class="line">    <span class="string">&#x27;test&#x27;</span>: &#123;</span><br><span class="line">      <span class="attr">handler</span>: <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">        <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&#x27;child change&#x27;</span>)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="title function_">data</span>(<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="attr">test</span>: <span class="number">1</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> <span class="title class_">Child</span>().$mount(<span class="string">&#x27;#app&#x27;</span>);</span><br><span class="line">vm.<span class="property">test</span> = <span class="number">2</span>;</span><br><span class="line"><span class="comment">// 输出结果</span></span><br><span class="line">parent change</span><br><span class="line">child change</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>简而言之:<mark class="tag-plugin colorful mark" color="orange">Vue 在处理 watch 选项的合并时，会将子组件与父组件的 watch 选项合并成一个数组。这个数组中的成员可以是回调函数、包含配置的对象，或者是指向函数的方法名。这样的设计提供了灵活的选项，以适应不同的数据监控需求。</mark></p>
+<h2 id="6-8-props-methods-inject-computed合并"><a href="#6-8-props-methods-inject-computed合并" class="headerlink" title="6.8 props methods inject computed合并"></a>6.8 props methods inject computed合并</h2><p>在 Vue 的源码设计中，props、methods、inject 和 computed 这些选项被归为一类，并且它们遵循相同的合并策略。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">strats.<span class="property">props</span> =</span><br><span class="line">    strats.<span class="property">methods</span> =</span><br><span class="line">    strats.<span class="property">inject</span> =</span><br><span class="line">    strats.<span class="property">computed</span> =</span><br><span class="line">    <span class="keyword">function</span> (<span class="params"></span></span><br><span class="line"><span class="params">        parentVal,</span></span><br><span class="line"><span class="params">        childVal,</span></span><br><span class="line"><span class="params">        vm,</span></span><br><span class="line"><span class="params">        key</span></span><br><span class="line"><span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (childVal &amp;&amp; __DEV__) &#123;</span><br><span class="line">        <span class="title function_">assertObjectType</span>(key, childVal, vm)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!parentVal) <span class="keyword">return</span> childVal</span><br><span class="line">    <span class="keyword">const</span> ret = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>)</span><br><span class="line">    <span class="title function_">extend</span>(ret, parentVal)</span><br><span class="line">    <span class="keyword">if</span> (childVal) <span class="title function_">extend</span>(ret, childVal)</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>简而言之。</p>
+<ol>
+<li>父类没有相应的选项，则直接使用子类的选项</li>
+<li>当父组件和子组件都提供了这些选项时，子组件的选项会覆盖父组件的选项。这种策略确保了组件能够继承和扩展行为，同时允许子组件通过提供自己的选项来覆盖继承自父组件或混入的选项。</li>
+</ol>
+<p>举个例子：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> <span class="title class_">Parent</span> = <span class="title class_">Vue</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">  <span class="attr">methods</span>:&#123;</span><br><span class="line">    <span class="attr">handleClick</span>:<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;父类点击事件&quot;</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">getParentName</span>:<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;获取父类名称&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> <span class="title class_">Child</span> = <span class="title class_">Parent</span>.<span class="title function_">extend</span>(&#123;</span><br><span class="line">  <span class="attr">methods</span>:&#123;</span><br><span class="line">    <span class="attr">handleClick</span>:<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;子类点击事件&quot;</span>)</span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">getChildName</span>:<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">      <span class="variable language_">console</span>.<span class="title function_">log</span>(<span class="string">&quot;获取父类名称&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)</span><br><span class="line"><span class="keyword">var</span> vm = <span class="keyword">new</span> <span class="title class_">Child</span>().$mount(<span class="string">&#x27;#app&#x27;</span>);</span><br><span class="line"><span class="variable language_">console</span>.<span class="title function_">log</span>(vm.<span class="property">$options</span>.<span class="property">methods</span>);</span><br><span class="line"><span class="comment">// 合并子类和父类，遇到相同的属性，使用子类覆盖父类</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">getChildName</span>:<span class="title function_">f</span>(),</span><br><span class="line">  <span class="attr">getParentName</span>:<span class="title function_">f</span>(),</span><br><span class="line">  <span class="attr">handleClick</span>:<span class="title function_">f</span>(),</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<h2 id="6-9-provide合并"><a href="#6-9-provide合并" class="headerlink" title="6.9 provide合并"></a>6.9 provide合并</h2><p>确保了子组件的 provide 选项可以覆盖父组件的同名选项，同时保留了父组件的其他选项。这种设计允许组件在继承和扩展 provide 数据时有更多的灵活性。通过这种方式，Vue 允许开发者在组件树中有效地传递数据，而无需通过每个层级的组件显式地传递 props。 </p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">strats.<span class="property">provide</span> = <span class="keyword">function</span> (<span class="params">parentVal, childVal</span>) &#123;</span><br><span class="line">  <span class="keyword">if</span> (!parentVal) <span class="keyword">return</span> childVal</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">function</span> (<span class="params"></span>) &#123;</span><br><span class="line">    <span class="keyword">const</span> ret = <span class="title class_">Object</span>.<span class="title function_">create</span>(<span class="literal">null</span>)</span><br><span class="line">    <span class="title function_">mergeData</span>(ret, <span class="title function_">isFunction</span>(parentVal) ? parentVal.<span class="title function_">call</span>(<span class="variable language_">this</span>) : parentVal)</span><br><span class="line">    <span class="keyword">if</span> (childVal) &#123;</span><br><span class="line">      <span class="title function_">mergeData</span>(</span><br><span class="line">        ret,</span><br><span class="line">        <span class="title function_">isFunction</span>(childVal) ? childVal.<span class="title function_">call</span>(<span class="variable language_">this</span>) : childVal,</span><br><span class="line">        <span class="literal">false</span> <span class="comment">// non-recursive</span></span><br><span class="line">      )</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ret</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>如果这篇文章对你有一定启发和帮助。欢迎给予打赏。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"> </p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/posts/vue2-init.html">🔥Vue2初始化时都干了什么事</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/posts/vue2-constructor.html">🔥Vue2的基本使用和原型设计</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></p>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AE%9E%E4%BE%8B%E5%8C%96%E6%97%B6%E5%90%88%E5%B9%B6%E9%80%89%E9%A1%B9"><span class="toc-text">一、实例化时合并选项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81Vue%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E9%BB%98%E8%AE%A4%E9%80%89%E9%A1%B9"><span class="toc-text">二、Vue构造函数的默认选项</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-initGlobalAPI%E6%96%B9%E6%B3%95%E5%88%9B%E5%BB%BA-Vue-options"><span class="toc-text">2.1 initGlobalAPI方法创建 Vue.options</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-2-%E5%90%88%E5%B9%B6%E6%8C%87%E4%BB%A4-%E5%86%85%E7%BD%AE%E7%BB%84%E4%BB%B6"><span class="toc-text">2.2 合并指令 &amp; 内置组件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-3-%E6%80%BB%E7%BB%93"><span class="toc-text">2.3 总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81%E5%AD%90%E7%B1%BB%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84-options"><span class="toc-text">三、子类构造函数的 options</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B%E3%80%81%E8%8E%B7%E5%8F%96%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8A%E7%9A%84-options"><span class="toc-text">四、获取构造函数上的 options</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-Ctor-super"><span class="toc-text">4.1 Ctor.super</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-%E5%88%A4%E6%96%AD%E7%88%B6%E7%B1%BB%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8A%E7%9A%84-options-%E6%98%AF%E5%90%A6%E5%8F%98%E5%8C%96"><span class="toc-text">4.2 判断父类构造函数上的 options 是否变化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-Vue%E6%97%A7%E7%89%88%E6%9C%AC%E7%9A%84-bug"><span class="toc-text">4.2.1 Vue旧版本的 bug</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2-Vue-mixin"><span class="toc-text">4.2.2 Vue.mixin</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-3-%E6%97%A7%E7%89%88%E6%9C%ACVue%E4%B8%AD-resolveConstructorOptions-%E7%9A%84%E9%80%BB%E8%BE%91%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="toc-text">4.2.3 旧版本Vue中 resolveConstructorOptions 的逻辑是什么？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-4-%E6%80%BB%E7%BB%93"><span class="toc-text">4.2.4 总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-%E4%BD%BF%E7%94%A8resolveModifiedOptions%E8%8E%B7%E5%8F%96%E6%9B%B4%E6%94%B9%E7%9A%84%E5%B1%9E%E6%80%A7"><span class="toc-text">4.3 使用resolveModifiedOptions获取更改的属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-4-%E6%80%BB%E7%BB%93"><span class="toc-text">5.4 总结</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81mergeOptions%E7%9A%84%E5%90%88%E5%B9%B6%E5%9C%BA%E6%99%AF"><span class="toc-text">五、mergeOptions的合并场景</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#5-1-Vue-extend"><span class="toc-text">5.1 Vue.extend</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-2-Vue-mixin"><span class="toc-text">5.2 Vue.mixin</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-3-vm-options"><span class="toc-text">5.3 vm.$options</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%AD%E3%80%81%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">六、合并策略</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#6-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%AD%96%E7%95%A5"><span class="toc-text">6.1 自定义策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-2-%E9%BB%98%E8%AE%A4%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.2 默认的合并策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-3-el%E3%80%81propsData%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.3 el、propsData的合并策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-4-data%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.4 data的合并策略</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-1-%E5%9C%A8%E5%AE%9A%E4%B9%89%E6%97%B6%E6%8A%A5%E9%94%99"><span class="toc-text">6.4.1 在定义时报错</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-2-mergeDataOrFn"><span class="toc-text">6.4.2 mergeDataOrFn</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#6-4-3-mergeData"><span class="toc-text">6.4.3 mergeData</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-5-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.5 生命周期的合并策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-6-%E7%BB%84%E4%BB%B6%E3%80%81%E6%8C%87%E4%BB%A4%E3%80%81%E8%BF%87%E6%BB%A4%E5%99%A8%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.6 组件、指令、过滤器的合并策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-7-watch%E7%9A%84%E5%90%88%E5%B9%B6%E7%AD%96%E7%95%A5"><span class="toc-text">6.7 watch的合并策略</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-8-props-methods-inject-computed%E5%90%88%E5%B9%B6"><span class="toc-text">6.8 props methods inject computed合并</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-9-provide%E5%90%88%E5%B9%B6"><span class="toc-text">6.9 provide合并</span></a></li></ol></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js`,
+    marked: `https://cdn.jsdelivr.net/npm/marked@13.0.1/lib/marked.umd.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+
+<!-- required -->
+<script src="/js/main.js?v=1.29.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    applyThemeToGiscus(theme)
+  }
+
+  const applyThemeToGiscus = (theme) => {
+    theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    }
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error)';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const els = document.getElementsByClassName('ds-memos');
+    if (els != undefined && els.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
