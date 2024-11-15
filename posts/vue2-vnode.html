@@ -1,0 +1,812 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1" theme-name="Stellar" theme-version="1.29.1">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  
+  <title>🔥Vue2渲染基础-虚拟DOM - 宝哥的博客</title>
+
+  
+    <meta name="description" content="专栏第六篇-虚拟节点以及createElement函数  在前面的文章中，我们介绍了Vue初始化的一系列操作。 可以Vue终归只是为了画页面。 后面的章节就带着大家来解析渲染相关的逻辑，一步一步解析Vue是如何将模板挂载到页面上的。 但是在解析渲染之前，我们先来了解一下Vue框架渲染的基础-虚拟 DOM。 一、渲染器的渲染流程在讨论虚拟节点之前，我们先来了解一下浏览器渲染的流程。 当浏览器接收到一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🔥Vue2渲染基础-虚拟DOM">
+<meta property="og:url" content="http://example.com/posts/vue2-vnode.html">
+<meta property="og:site_name" content="宝哥的博客">
+<meta property="og:description" content="专栏第六篇-虚拟节点以及createElement函数  在前面的文章中，我们介绍了Vue初始化的一系列操作。 可以Vue终归只是为了画页面。 后面的章节就带着大家来解析渲染相关的逻辑，一步一步解析Vue是如何将模板挂载到页面上的。 但是在解析渲染之前，我们先来了解一下Vue框架渲染的基础-虚拟 DOM。 一、渲染器的渲染流程在讨论虚拟节点之前，我们先来了解一下浏览器渲染的流程。 当浏览器接收到一">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/vnode/1.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/vnode/2.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/vnode/3.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/vnode/3.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/banner/vnode.png">
+<meta property="article:published_time" content="2024-11-13T07:55:00.000Z">
+<meta property="article:modified_time" content="2024-11-15T05:43:06.902Z">
+<meta property="article:author" content="Jiabao Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/assets/topic/vue2/vnode/1.png">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.29.1">
+
+  
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+  
+
+  
+
+  <link rel="stylesheet" href="/css/extra.css">
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://avatars.githubusercontent.com/u/77631518?u=fb7a512e1f331b63c51ddf591548f0fd2d5697ac&v=4&size=64" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">宝哥的博客</div><div class="sub normal cap">旨在分享这么多年来积累的技术</div><div class="sub hover cap" style="opacity:0"> Share My Code</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+<nav class="menu dis-select"></nav>
+</div>
+<div class="widgets">
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：图解Vue2源码</span></div><div class="widget-body"><a class="item active" href="/posts/vue2-vnode.html"><span class="title">🔥Vue2渲染基础-虚拟DOM</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-merge-options.html"><span class="title">🔥Vue2丰富的选项合并策略</span></a><a class="item" href="/posts/vue2-init.html"><span class="title">🔥Vue2初始化时都干了什么事</span></a><a class="item" href="/posts/vue2-constructor.html"><span class="title">🔥Vue2的基本使用和原型设计</span></a><a class="item" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="javaScript:switchTheme();" rel="noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/footer/moon.svg" alt="moon" /></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top"><img class="bg lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/vnode.png">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-vnode.html">图解Vue2源码</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-13T07:55:00.000Z">2024-11-13</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-15T05:43:06.902Z">2024-11-15</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>🔥Vue2渲染基础-虚拟DOM</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第六篇-虚拟节点以及createElement函数</span><span class="empty"></span></p></div>
+
+<p>在前面的文章中，我们介绍了Vue初始化的一系列操作。</p>
+<p>可以Vue终归只是为了画页面。</p>
+<p>后面的章节就带着大家来解析渲染相关的逻辑，一步一步解析Vue是如何将模板挂载到页面上的。</p>
+<p>但是在解析渲染之前，我们先来了解一下Vue框架渲染的基础-虚拟 DOM。</p>
+<h1 id="一、渲染器的渲染流程"><a href="#一、渲染器的渲染流程" class="headerlink" title="一、渲染器的渲染流程"></a>一、渲染器的渲染流程</h1><p>在讨论虚拟节点之前，我们先来了解一下浏览器渲染的流程。</p>
+<p>当浏览器接收到一个 HTML 文件后，JavaScript 引擎与浏览器的渲染引擎随即开始运行。</p>
+<p>从渲染引擎的角度来看，它首先会把 HTML 文件解析为一个 DOM 树。</p>
+<p>与此同时，浏览器会识别并加载 CSS 样式，然后将其与 DOM 树合并，形成一个渲染树。</p>
+<p>在有了渲染树之后，渲染引擎会计算所有元素的位置信息，最后通过绘制操作，在屏幕上呈现出最终的内容。</p>
+<p>JavaScript 引擎和渲染引擎虽然处于两个独立的线程之中，然而 JavaScript 引擎却能够触发渲染引擎开始工作。</p>
+<p>当我们借助脚本去更改元素的位置或者外观时，JavaScript 引擎会运用与 DOM 相关的 API 方法来操作 DOM 对象。</p>
+<p>此时渲染引擎便开始运作，渲染引擎会触发回流或者重绘操作。</p>
+<p>我们来了解下回流以及重绘的概念：</p>
+<ul>
+<li><p>回流：当我们对DOM的修改引发了<mark class="tag-plugin colorful mark" color="orange">元素尺寸的变化</mark>时，浏览器需要重新计算元素的大小和位置，最后将重新计算的结果绘制出来，这个过程称为回流。</p>
+</li>
+<li><p>重绘：当我们对DOM的修改只单纯<mark class="tag-plugin colorful mark" color="orange">改变元素的颜色</mark>时，浏览器此时并不需要重新计算元素的大小和位置，而只要重新绘制新样式。这个过程称为重绘。</p>
+</li>
+</ul>
+<mark class="tag-plugin colorful mark" color="orange">很显然，回流比起重绘更加消耗性能。</mark>
+
+<p>通过了解浏览器基本的渲染机制，我们不难联想到，当不断地通过 JavaScript 修改 DOM 时，很容易在不经意间触发渲染引擎的回流或者重绘，而这种操作所带来的性能开销是非常巨大的。</p>
+<p>因此，为了降低性能开销，我们需要做的是尽可能地减少对 DOM 的操作。</p>
+<p>虚拟节点就是在这种情况下孕育而生。</p>
+<h1 id="二-缓冲层-虚拟DOM"><a href="#二-缓冲层-虚拟DOM" class="headerlink" title="二. 缓冲层-虚拟DOM"></a>二. 缓冲层-虚拟DOM</h1><p>虚拟 DOM （Virtual DOM 以下简称 VDOM）是为了解决频繁操作 DOM 所引发的性能问题而产生的产物。</p>
+<p>VDOM是把页面的状态抽象成 JS 对象的形式呈现。</p>
+<p>从本质上来说，它处于 JS 与真实 DOM 之间，起着中间层的作用。</p>
+<p>当我们需要使用 JS 脚本进行大批量的 DOM 操作时，会优先在虚拟 VDOM 这个 JS 对象上进行操作。</p>
+<p>最后，通过对比找出将要改动的部分，并将这些改动通知并更新到真实的 DOM 上。</p>
+<p>尽管最终仍然是对真实的 DOM 进行操作，然而虚拟 DOM 能够将多个改动合并为一个批量操作。</p>
+<p>这样做可以减少 DOM 重排的次数，进而缩短生成渲染树以及进行绘制所花费的时间。</p>
+<p>我们来看一下一个真实的 DOM 具体包含了哪些内容。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/vnode/1.png" data-fancybox="true"/></div></div>
+
+<p>浏览器将真实的 DOM 设计得极为复杂。</p>
+<p>它不但包含了自身的属性描述，如大小、位置等定义，还囊括了 DOM 所拥有的浏览器事件等内容。</p>
+<p>正是由于其如此复杂的结构，我们频繁地去操作 DOM 或多或少会给浏览器带来性能方面的问题。</p>
+<p>而作为数据与真实 DOM 之间的一层缓冲，虚拟 DOM 只是用于映射到真实 DOM 进行渲染，所以并不需要包含操作 DOM 的方法。</p>
+<p>它只需在对象中重点关注几个属性就可以了。</p>
+<h1 id="三、-VNode"><a href="#三、-VNode" class="headerlink" title="三、 VNode"></a>三、 VNode</h1><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 真实DOM</span></span><br><span class="line">&lt;div id=<span class="string">&quot;app&quot;</span>&gt;<span class="language-xml"><span class="tag">&lt;<span class="name">span</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">span</span>&gt;</span></span>&lt;/div&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 真实DOM对应的JS对象(VNode)</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">tag</span>:<span class="string">&#x27;div&#x27;</span>,</span><br><span class="line">  <span class="attr">data</span>:&#123;</span><br><span class="line">    <span class="attr">id</span>:<span class="string">&#x27;app&#x27;</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">children</span>:[&#123;</span><br><span class="line">    <span class="attr">tag</span>:<span class="string">&#x27;span&#x27;</span>,</span><br><span class="line">    <span class="attr">children</span>:[</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">tag</span>:<span class="literal">undefined</span>,</span><br><span class="line">        <span class="attr">text</span>:<span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;]</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></div></div>
+
+<p>通过上面的例子我们可以看出来<mark class="tag-plugin colorful mark" color="orange">每一个 DOM节点 都可以使用一个 VNode 来表示</mark>。</p>
+<p>在 Vue内部，使用 VNode 这个构造函数去描述一个节点。 </p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> <span class="keyword">class</span> <span class="title class_">VNode</span> &#123;</span><br><span class="line">  tag?: string</span><br><span class="line">  <span class="attr">data</span>: <span class="title class_">VNodeData</span> | <span class="literal">undefined</span></span><br><span class="line">  children?: <span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt; | <span class="literal">null</span></span><br><span class="line">  text?: string</span><br><span class="line">  <span class="attr">elm</span>: <span class="title class_">Node</span> | <span class="literal">undefined</span></span><br><span class="line">  ns?: string</span><br><span class="line">  context?: <span class="title class_">Component</span> <span class="comment">// rendered in this component&#x27;s scope</span></span><br><span class="line">  <span class="attr">key</span>: string | number | <span class="literal">undefined</span></span><br><span class="line">  componentOptions?: <span class="title class_">VNodeComponentOptions</span></span><br><span class="line">  componentInstance?: <span class="title class_">Component</span> <span class="comment">// component instance</span></span><br><span class="line">  <span class="attr">parent</span>: <span class="title class_">VNode</span> | <span class="literal">undefined</span> | <span class="literal">null</span> <span class="comment">// component placeholder node</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// strictly internal</span></span><br><span class="line">  <span class="attr">raw</span>: boolean <span class="comment">// contains raw HTML? (server only)</span></span><br><span class="line">  <span class="attr">isStatic</span>: boolean <span class="comment">// hoisted static node</span></span><br><span class="line">  <span class="attr">isRootInsert</span>: boolean <span class="comment">// necessary for enter transition check</span></span><br><span class="line">  <span class="attr">isComment</span>: boolean <span class="comment">// empty comment placeholder?</span></span><br><span class="line">  <span class="attr">isCloned</span>: boolean <span class="comment">// is a cloned node?</span></span><br><span class="line">  <span class="attr">isOnce</span>: boolean <span class="comment">// is a v-once node?</span></span><br><span class="line">  asyncFactory?: <span class="title class_">Function</span> <span class="comment">// async component factory function</span></span><br><span class="line">  <span class="attr">asyncMeta</span>: <span class="title class_">Object</span> | <span class="keyword">void</span></span><br><span class="line">  <span class="attr">isAsyncPlaceholder</span>: boolean</span><br><span class="line">  ssrContext?: <span class="title class_">Object</span> | <span class="keyword">void</span></span><br><span class="line">  <span class="attr">fnContext</span>: <span class="title class_">Component</span> | <span class="keyword">void</span> <span class="comment">// real context vm for functional nodes</span></span><br><span class="line">  fnOptions?: <span class="title class_">ComponentOptions</span> | <span class="literal">null</span> <span class="comment">// for SSR caching</span></span><br><span class="line">  devtoolsMeta?: <span class="title class_">Object</span> | <span class="literal">null</span> <span class="comment">// used to store functional render context for devtools</span></span><br><span class="line">  fnScopeId?: string | <span class="literal">null</span> <span class="comment">// functional scope id support</span></span><br><span class="line">  isComponentRootElement?: boolean | <span class="literal">null</span> <span class="comment">// for SSR directives</span></span><br><span class="line"></span><br><span class="line">  <span class="title function_">constructor</span>(<span class="params"></span></span><br><span class="line"><span class="params">    tag?: string,</span></span><br><span class="line"><span class="params">    data?: VNodeData,</span></span><br><span class="line"><span class="params">    children?: <span class="built_in">Array</span>&lt;VNode&gt; | <span class="literal">null</span>,</span></span><br><span class="line"><span class="params">    text?: string,</span></span><br><span class="line"><span class="params">    elm?: Node,</span></span><br><span class="line"><span class="params">    context?: Component,</span></span><br><span class="line"><span class="params">    componentOptions?: VNodeComponentOptions,</span></span><br><span class="line"><span class="params">    asyncFactory?: <span class="built_in">Function</span></span></span><br><span class="line"><span class="params">  </span>) &#123;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">tag</span> = tag</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">data</span> = data</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">children</span> = children</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">text</span> = text</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">elm</span> = elm</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">ns</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">context</span> = context</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">fnContext</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">fnOptions</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">fnScopeId</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">key</span> = data &amp;&amp; data.<span class="property">key</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">componentOptions</span> = componentOptions</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">componentInstance</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">parent</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">raw</span> = <span class="literal">false</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isStatic</span> = <span class="literal">false</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isRootInsert</span> = <span class="literal">true</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isComment</span> = <span class="literal">false</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isCloned</span> = <span class="literal">false</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isOnce</span> = <span class="literal">false</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">asyncFactory</span> = asyncFactory</span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">asyncMeta</span> = <span class="literal">undefined</span></span><br><span class="line">    <span class="variable language_">this</span>.<span class="property">isAsyncPlaceholder</span> = <span class="literal">false</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// DEPRECATED: alias for componentInstance for backwards compat.</span></span><br><span class="line">  <span class="comment">/* istanbul ignore next */</span></span><br><span class="line">  <span class="keyword">get</span> <span class="title function_">child</span>(): <span class="title class_">Component</span> | <span class="keyword">void</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="variable language_">this</span>.<span class="property">componentInstance</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></div></div>
+
+<p>我们可以使用 new 关键字来创建一个 VNode。 </p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 创建一个div的 vnode</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">VNode</span>(<span class="string">&#x27;div&#x27;</span>,&#123;&#125;,<span class="string">&#x27;Hello World&#x27;</span>)</span><br><span class="line"><span class="comment">// 创建一个有子节点的 vnode</span></span><br><span class="line"><span class="keyword">new</span> <span class="title class_">VNode</span>(<span class="string">&#x27;div&#x27;</span>,&#123;&#125;,[</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">VNode</span>(<span class="string">&#x27;span&#x27;</span>,&#123;&#125;,<span class="string">&#x27;1&#x27;</span>),</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">VNode</span>(<span class="string">&#x27;span&#x27;</span>,&#123;&#125;,<span class="string">&#x27;2&#x27;</span>),</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">VNode</span>(<span class="string">&#x27;span&#x27;</span>,&#123;&#125;,<span class="string">&#x27;3&#x27;</span>)</span><br><span class="line">])</span><br></pre></td></tr></table></figure></div></div>
+
+<p>VNode这个构造函数上有非常多的属性，这里我们先列举四个常用的属性：<code>tag、data、children、text</code>。</p>
+<p>其余属性在我们后面的解析中会一一进行解析。</p>
+<h2 id="3-1-tag属性"><a href="#3-1-tag属性" class="headerlink" title="3.1 tag属性"></a>3.1 tag属性</h2><p>tag表示创建的虚拟节点的标签名称。</p>
+<p>决定了最终会渲染成什么样的 DOM元素。</p>
+<p>tag可以是 HTML 元素，比如字符串<mark class="tag-plugin colorful mark" color="orange">span、'div'</mark>。</p>
+<p>也可以是一个组件引用，同样可以是一个动态标签。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译前（普通节点）</span></span><br><span class="line">&lt;div&gt;&lt;/div&gt; </span><br><span class="line"><span class="comment">// 编译后</span></span><br><span class="line"><span class="title class_">VNode</span> &#123;</span><br><span class="line">  <span class="attr">tag</span>:<span class="string">&quot;div&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 编译前（组件节点）</span></span><br><span class="line">&lt;<span class="title class_">CustomComponent</span>&gt;&lt;/<span class="title class_">CustomComponent</span>&gt; </span><br><span class="line"><span class="comment">// 编译后</span></span><br><span class="line"><span class="title class_">VNode</span> &#123;</span><br><span class="line">  <span class="attr">tag</span>:<span class="string">&quot;CustomComponent&quot;</span></span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></div></div>
+
+<h2 id="3-2-data属性"><a href="#3-2-data属性" class="headerlink" title="3.2 data属性"></a>3.2 data属性</h2><p>data 参数通常是一个对象，包含了用于描述 VNode 的各种属性和配置信息。</p>
+<p>data 参数可以由以下几种构成：</p>
+<ul>
+<li><code>attrs</code>:表示元素的上静态属性，如src、alt等。</li>
+<li><code>staicClass</code>:表示元素上的静态css类。</li>
+<li><code>style</code>:表示元素上的内联样式。</li>
+<li><code>on</code>:表示元素上的事件监听器。</li>
+<li><code>slot</code>:表示作用域插槽或普通插槽的位置。</li>
+<li><code>props</code>:表示传递组件的 props 数据。</li>
+<li><code>directives</code>:表示添加的自定义的行为，如 v-model、v-show等。</li>
+<li><code>key</code>:表示组件唯一标识。</li>
+</ul>
+<h2 id="3-3-children"><a href="#3-3-children" class="headerlink" title="3.3 children"></a>3.3 children</h2><p>children 参数是指定一个 VNode（虚拟节点）的子节点内容。</p>
+<p>这个参数可以包含多种类型的数据，用于描述子节点的结构和内容。</p>
+<h2 id="3-4-text"><a href="#3-4-text" class="headerlink" title="3.4 text"></a>3.4 text</h2><p>我们知道并不是每个节点都有tag的，比如文字节点就没有tag。</p>
+<p>在Vue中，文字也代表一个vnode。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 编译前</span></span><br><span class="line"><span class="string">&quot;我是&quot;</span> </span><br><span class="line"><span class="comment">// 编译后</span></span><br><span class="line"><span class="title class_">VNode</span> &#123;</span><br><span class="line">  <span class="attr">text</span>:<span class="string">&quot;我是&quot;</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<h2 id="3-1-5-elm"><a href="#3-1-5-elm" class="headerlink" title="3.1.5 elm"></a>3.1.5 elm</h2><p>我们知道在渲染时会根据 VNode 创建DOM元素。</p>
+<p>渲染后每个VNode节点都有对应的真实 DOM元素。</p>
+<p>而这个 elm 就指向这个真实 DOM元素。</p>
+<h1 id="四-createElement函数"><a href="#四-createElement函数" class="headerlink" title="四. createElement函数"></a>四. createElement函数</h1><p>经过上面的学习，我们知道虚拟DOM就是一个JS对象，只不过他有很多属性。</p>
+<p>所示说创建一个虚拟DOM也绝不是什么难事，但是 Vue 框架给我们提供了一个函数createElement。</p>
+<p>这个函数可以更方便的帮我们生成虚拟 DOM，在其中磨平了一些细节。</p>
+<p>它被定义在 <code>src/core/vdom/create-element.js</code> 中：</p>
+<h2 id="4-1-createElement在开发时的使用场景"><a href="#4-1-createElement在开发时的使用场景" class="headerlink" title="4.1 createElement在开发时的使用场景"></a>4.1 createElement在开发时的使用场景</h2><p>了解createElement的使用场景有哪些对看源码是有一定的帮助的。</p>
+<p>有场景带入源码才知道对应的逻辑是在做什么，否则你光看源码，对于一些逻辑你是无法看懂的。</p>
+<h3 id="4-1-1-webpack编译时使用"><a href="#4-1-1-webpack编译时使用" class="headerlink" title="4.1.1 webpack编译时使用"></a>4.1.1 webpack编译时使用</h3><p>Vue框架底层渲染时会调用实例上的_render方法，这个 render方法实际上就是调用了实例选项上的 render方法。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vm.<span class="property">_render</span> =&gt; vm.<span class="property">$options</span>.<span class="property">render</span></span><br></pre></td></tr></table></figure></div></div>
+<p>你可能会有些困惑，因为平时我们都是使用.vue文件进行单页面开发，没有写过什么 render方法啊，那这个 render方法是怎么来的呢？</p>
+<p>其实我们平时编写的 template模板标签在 webpack预编译阶段会变成一个创建vnode的函数。</p>
+<p>比如我们在模版中编写一个简单的字符串：</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;template&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>hello world<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&lt;/template&gt;</span><br></pre></td></tr></table></figure></div></div>
+
+<mark class="tag-plugin colorful mark" color="orange">.vue文件在webpack预编译时会解析成一个对象，而模板部分则会编译成 render函数。</mark>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/vnode/2.png" data-fancybox="true"/></div></div>
+
+<p>所以平时我们<code>import Test from &quot;./Test&quot;</code>，这里的Test打印出来是一个对象。</p>
+<p>我们再看一下这里编译的 render方法，发现没有使用 createElement函数来创建节点，而使用了_c。</p>
+<p>那么这里的_c代表什么？</p>
+<p>_c实际上是在 vue初始化时在initRender方法中注入的，本质上也就是调用了 createElement。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第六个参数代表是否需要规范化子节点 这里表示不需要 因为 webpack 预编译时会编译子节点</span></span><br><span class="line">vm.<span class="property">_c</span> = <span class="function">(<span class="params">a, b, c, d</span>) =&gt;</span> <span class="title function_">createElement</span>(vm, a, b, c, d, <span class="literal">false</span>)</span><br></pre></td></tr></table></figure></div></div>
+
+<h3 id="4-1-2-用户自定义render方法"><a href="#4-1-2-用户自定义render方法" class="headerlink" title="4.1.2 用户自定义render方法"></a>4.1.2 用户自定义render方法</h3><p>我们知道.vue文件会被解析成一个对象的形式。</p>
+<p>所以我们也可以自己写一个 js文件，自己定义 render方法。Vue提供了这种能力。</p>
+<p>我们一般会这么自定义函数。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">render</span>:<span class="function">(<span class="params">h</span>)=&gt;</span>&#123;</span><br><span class="line">    <span class="keyword">return</span> &#123;</span><br><span class="line">      <span class="title function_">h</span>(<span class="string">&#x27;div&#x27;</span>,<span class="string">&#x27;hello world&#x27;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>而源码中会将 vm.$createElement传入 render方法中。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span> &#123; </span><br><span class="line">  vnode = render.<span class="title function_">call</span>(vm.<span class="property">_renderProxy</span>, vm.<span class="property">$createElement</span>)</span><br><span class="line">&#125; <span class="keyword">catch</span> (<span class="attr">e</span>: any) &#123;</span><br><span class="line">  <span class="comment">///</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+
+<p>所以这里的 vm.$createElement就是<mark class="tag-plugin colorful mark" color="orange">h函数</mark>，也就是创建 VNode的函数。</p>
+<blockquote>
+<p>$createElement和_c一样也是在vue初始化时在initRender方法中注入的。</p>
+</blockquote>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 第六个参数是 true 表示需要处理子节点为 VNode节点</span></span><br><span class="line">vm.<span class="property">$createElement</span> = <span class="function">(<span class="params">a, b, c, d</span>) =&gt;</span> <span class="title function_">createElement</span>(vm, a, b, c, d, <span class="literal">true</span>)</span><br></pre></td></tr></table></figure></div></div>
+
+<blockquote>
+<p>_c和$createElement的不同之处是$createElement中对于 createElement的第六个参数传递的值不同。</p>
+</blockquote>
+<h2 id="4-2-createElement函数解析"><a href="#4-2-createElement函数解析" class="headerlink" title="4.2 createElement函数解析"></a>4.2 createElement函数解析</h2><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">createElement</span>(<span class="params"></span></span><br><span class="line"><span class="params">  context: Component,</span></span><br><span class="line"><span class="params">  tag: any,</span></span><br><span class="line"><span class="params">  data: any,</span></span><br><span class="line"><span class="params">  children: any,</span></span><br><span class="line"><span class="params">  normalizationType: any,</span></span><br><span class="line"><span class="params">  alwaysNormalize: boolean</span></span><br><span class="line"><span class="params"></span>): <span class="title class_">VNode</span> | <span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt; &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isArray</span>(data) || <span class="title function_">isPrimitive</span>(data)) &#123;</span><br><span class="line">    normalizationType = children</span><br><span class="line">    children = data</span><br><span class="line">    data = <span class="literal">undefined</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isTrue</span>(alwaysNormalize)) &#123;</span><br><span class="line">    normalizationType = <span class="variable constant_">ALWAYS_NORMALIZE</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">_createElement</span>(context, tag, data, children, normalizationType)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
+<p>createElement的参数分别是：</p>
+<ol>
+<li>第一个参数为context：表示上下文，一般这里传递的是vue实例vm。</li>
+<li>第二个参数为 tag：表示创建的虚拟节点的标签。</li>
+<li>第三个参数为 data：表示创建的虚拟节点的数据。</li>
+<li>第四个参数为 children：表示虚拟节点的子节点。</li>
+<li>第五个参数为 normalizationType：这个参数决定规范化的类型。</li>
+<li>第六个参数为 alwaysNormalize：表示是否规范化子节点。</li>
+</ol>
+<p>createElement 方法实际上是对 _createElement 方法的封装，它允许传入的参数更加灵活，在处理这些参数后，调用真正创建 VNode 的函数 <mark class="tag-plugin colorful mark" color="orange">_createElement</mark>。</p>
+<h3 id="4-2-1-对第二个参数做兼容"><a href="#4-2-1-对第二个参数做兼容" class="headerlink" title="4.2.1 对第二个参数做兼容"></a>4.2.1 对第二个参数做兼容</h3><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 存在 data的情况</span></span><br><span class="line"><span class="title function_">createElement</span>(context,<span class="string">&#x27;div&#x27;</span>,&#123;<span class="attr">style</span>:&#123;<span class="attr">color</span>:<span class="string">&quot;red&quot;</span>&#125;&#125;,<span class="string">&#x27;hello world&#x27;</span>) </span><br><span class="line"><span class="comment">// 不存在 data的情况</span></span><br><span class="line"><span class="title function_">createElement</span>(context,<span class="string">&#x27;div&#x27;</span>,<span class="literal">null</span>,<span class="string">&#x27;hello world&#x27;</span>)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>如上，第三个参数表示 data，第四个参数表示children。</p>
+<p>而很多时候，我们不需要传递 data属性，但是由于参数顺序的原因，依旧需要传递一个空对象来进行占位。</p>
+<p>这个时候函数内部对这个参数进行了兼容处理。</p>
+<p>判断如果第三个参数是<mark class="tag-plugin colorful mark" color="orange">数组或者原始类型（字符串，数字等）</mark>，则将其第三个参数视为是传递的子节点。</p>
+<p>同时将data置为undefined，normalizationType使用第四个参数。</p>
+<p>因此我们可以这么调用，不用再使用一个占位符了。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不存在 data的情况 不需要传递 data进行占位</span></span><br><span class="line"><span class="title function_">createElement</span>(context,<span class="string">&#x27;div&#x27;</span>,<span class="string">&#x27;hello world&#x27;</span>)</span><br></pre></td></tr></table></figure></div></div> 
+
+<h3 id="4-2-2-对children的规范化"><a href="#4-2-2-对children的规范化" class="headerlink" title="4.2.2 对children的规范化"></a>4.2.2 对children的规范化</h3><p>由于VNode实际上是一个树状结构，每一个VNode可能会有若干个子节点，这些子节点应该也是 VNode 的类型。</p>
+<p>_createElement 接收的第 4 个参数 children 是任意类型的，因此我们需要把它们规范成 VNode 类型。</p>
+<p>normalizationType的值有 2 种：</p>
+<ol>
+<li><code>SIMPLE_NORMALIZE</code>：值为 1，表示简单处理子节点</li>
+<li><code>ALWAYS_NORMALIZE</code>：值为 2，表示递归处理所有子节点</li>
+</ol>
+<blockquote>
+<p>需要注意的是对于用户手动创建render方法，normalizationType一直为ALWAYS_NORMALIZE。表示需要规范处理子节点。</p>
+<p>因为用户有可能不是很熟悉 createElement的使用方式和 Vue的渲染机制导致一些错误情况的发生，如下：</p>
+</blockquote>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果不进行处理，在渲染过程中极有可能会产生问题</span></span><br><span class="line"><span class="title function_">render</span>(<span class="params">h</span>)&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">h</span>(<span class="string">&#x27;ul&#x27;</span>,[</span><br><span class="line">    <span class="string">&quot;苹果&quot;</span>,</span><br><span class="line">    <span class="string">&quot;香蕉&quot;</span>,</span><br><span class="line">    <span class="string">&quot;梨&quot;</span></span><br><span class="line">  ])</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+<p>这里根据 normalizationType 的不同，分别调用了<mark class="tag-plugin colorful mark" color="orange">normalizeChildren(children)</mark> 和 <mark class="tag-plugin colorful mark" color="orange">simpleNormalizeChildren(children)</mark>方法。</p>
+<p>它们的定义都在 <mark class="tag-plugin colorful mark" color="orange">src/core/vdom/helpers/normalzie-children.js</mark> 中：</p>
+<h4 id="4-2-2-1-simpleNormalizeChildren"><a href="#4-2-2-1-simpleNormalizeChildren" class="headerlink" title="4.2.2.1 simpleNormalizeChildren"></a>4.2.2.1 simpleNormalizeChildren</h4><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The template compiler attempts to minimize the need for normalization by</span></span><br><span class="line"><span class="comment">// statically analyzing the template at compile time.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// For plain HTML markup, normalization can be completely skipped because the</span></span><br><span class="line"><span class="comment">// generated render function is guaranteed to return Array&lt;VNode&gt;. There are</span></span><br><span class="line"><span class="comment">// two cases where extra normalization is needed:</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. When the children contains components - because a functional component</span></span><br><span class="line"><span class="comment">// may return an Array instead of a single root. In this case, just a simple</span></span><br><span class="line"><span class="comment">// normalization is needed - if any child is an Array, we flatten the whole</span></span><br><span class="line"><span class="comment">// thing with Array.prototype.concat. It is guaranteed to be only 1-level deep</span></span><br><span class="line"><span class="comment">// because functional components already normalize their own children.</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">simpleNormalizeChildren</span>(<span class="params">children: any</span>) &#123;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; children.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isArray</span>(children[i])) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="title class_">Array</span>.<span class="property"><span class="keyword">prototype</span></span>.<span class="property">concat</span>.<span class="title function_">apply</span>([], children)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> children</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>当 normalizationType 为 SIMPLE_NORMALIZE 时，才会调用simpleNormalizeChildren方法。</p>
+<p>那么 normalizationType 何时才会是 SIMPLE_NORMALIZE呢？</p>
+<p>我们知道用户自定义 render函数的时候，normalizationType恒为ALWAYS_NORMALIZE，所以只有是在编译的时候在_c中才会将值变成 SIMPLE_NORMALIZE。</p>
+<p>理论上编译生成的children都已经是 VNode类型了，不需要处理了才对。</p>
+<p>但是有一种情况需要考虑，就是函数组件返回的是一个数组而不是一个根节点，</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">    <span class="attr">functional</span>: <span class="literal">true</span>,</span><br><span class="line">    <span class="attr">props</span>: [<span class="string">&#x27;items&#x27;</span>],</span><br><span class="line">    <span class="title function_">render</span>(<span class="params">h, &#123; props &#125;</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> props.<span class="property">items</span>.<span class="title function_">map</span>(<span class="function"><span class="params">item</span> =&gt;</span> <span class="title function_">h</span>(<span class="string">&#x27;li&#x27;</span>, item));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>此时需要将数组打平成一级。</p>
+<h4 id="4-2-2-2-normalizeChildren递归处理子节点"><a href="#4-2-2-2-normalizeChildren递归处理子节点" class="headerlink" title="4.2.2.2 normalizeChildren递归处理子节点"></a>4.2.2.2 normalizeChildren递归处理子节点</h4><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">normalizeChildren</span>(<span class="params">children: any</span>): <span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt; | <span class="literal">undefined</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="title function_">isPrimitive</span>(children)</span><br><span class="line">    ? [<span class="title function_">createTextVNode</span>(children)]</span><br><span class="line">    : <span class="title function_">isArray</span>(children)</span><br><span class="line">    ? <span class="title function_">normalizeArrayChildren</span>(children)</span><br><span class="line">    : <span class="literal">undefined</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>normalizeChildren用在用户自定义render时对 children进行规范化，因为编译时已经将 children 都规范化为了createElement创建函数。</p>
+<ol>
+<li>Vue允许用户把children写成基础类型用来创建单个简单的文本节点，对应这种场景，vue会调用 createTextVNode创建一个文本节点的 VNode，并且会转化成数组的形式。</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用户自定义 render函数</span></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> &#123;</span><br><span class="line">  <span class="attr">render</span>:<span class="keyword">function</span>(<span class="params">h</span>)&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">h</span>(<span class="string">&#x27;div&#x27;</span>,<span class="string">&#x27;Hello World&#x27;</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 生成的 VNode</span></span><br><span class="line"><span class="title class_">VNode</span> &#123;</span><br><span class="line">  <span class="attr">tag</span>:<span class="string">&#x27;div&#x27;</span>,</span><br><span class="line">  <span class="comment">// 将文字转化成了children数组</span></span><br><span class="line">  <span class="attr">children</span>:[</span><br><span class="line">    <span class="title class_">VNode</span> &#123;</span><br><span class="line">      <span class="attr">tag</span>: <span class="literal">undefined</span>,</span><br><span class="line">      <span class="attr">text</span>: <span class="string">&#x27;Hello World&#x27;</span></span><br><span class="line">    &#125;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>  
+
+<ol start="2">
+<li>如果 children是一个数组，需要递归处理 children，遍历每一个子节点，将每一个子节点转化为标准的 VNode，其中这个转化操作是使用normalizeArrayChildren函数来完成的。</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">normalizeArrayChildren</span>(<span class="params"></span></span><br><span class="line"><span class="params">  children: any,</span></span><br><span class="line"><span class="params">  nestedIndex?: string</span></span><br><span class="line"><span class="params"></span>): <span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt; &#123;</span><br><span class="line">  <span class="keyword">const</span> <span class="attr">res</span>: <span class="title class_">VNode</span>[] = []</span><br><span class="line">  <span class="keyword">let</span> i, c, lastIndex, last</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; children.<span class="property">length</span>; i++) &#123;</span><br><span class="line">    c = children[i]</span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isUndef</span>(c) || <span class="keyword">typeof</span> c === <span class="string">&#x27;boolean&#x27;</span>) <span class="keyword">continue</span></span><br><span class="line">    lastIndex = res.<span class="property">length</span> - <span class="number">1</span></span><br><span class="line">    last = res[lastIndex]</span><br><span class="line">    <span class="comment">//  nested</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="title function_">isArray</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (c.<span class="property">length</span> &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        c = <span class="title function_">normalizeArrayChildren</span>(c, <span class="string">`<span class="subst">$&#123;nestedIndex || <span class="string">&#x27;&#x27;</span>&#125;</span>_<span class="subst">$&#123;i&#125;</span>`</span>)</span><br><span class="line">        <span class="comment">// merge adjacent text nodes</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="title function_">isTextNode</span>(c[<span class="number">0</span>]) &amp;&amp; <span class="title function_">isTextNode</span>(last)) &#123;</span><br><span class="line">          res[lastIndex] = <span class="title function_">createTextVNode</span>(last.<span class="property">text</span> + c[<span class="number">0</span>].<span class="property">text</span>)</span><br><span class="line">          c.<span class="title function_">shift</span>()</span><br><span class="line">        &#125;</span><br><span class="line">        res.<span class="property">push</span>.<span class="title function_">apply</span>(res, c)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="title function_">isPrimitive</span>(c)) &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">isTextNode</span>(last)) &#123;</span><br><span class="line">        <span class="comment">// merge adjacent text nodes</span></span><br><span class="line">        <span class="comment">// this is necessary for SSR hydration because text nodes are</span></span><br><span class="line">        <span class="comment">// essentially merged when rendered to HTML strings</span></span><br><span class="line">        res[lastIndex] = <span class="title function_">createTextVNode</span>(last.<span class="property">text</span> + c)</span><br><span class="line">      &#125; <span class="keyword">else</span> <span class="keyword">if</span> (c !== <span class="string">&#x27;&#x27;</span>) &#123;</span><br><span class="line">        <span class="comment">// convert primitive to vnode</span></span><br><span class="line">        res.<span class="title function_">push</span>(<span class="title function_">createTextVNode</span>(c))</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">if</span> (<span class="title function_">isTextNode</span>(c) &amp;&amp; <span class="title function_">isTextNode</span>(last)) &#123;</span><br><span class="line">        <span class="comment">// merge adjacent text nodes</span></span><br><span class="line">        res[lastIndex] = <span class="title function_">createTextVNode</span>(last.<span class="property">text</span> + c.<span class="property">text</span>)</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// default key for nested array children (likely generated by v-for)</span></span><br><span class="line">        <span class="keyword">if</span> (</span><br><span class="line">          <span class="title function_">isTrue</span>(children.<span class="property">_isVList</span>) &amp;&amp;</span><br><span class="line">          <span class="title function_">isDef</span>(c.<span class="property">tag</span>) &amp;&amp;</span><br><span class="line">          <span class="title function_">isUndef</span>(c.<span class="property">key</span>) &amp;&amp;</span><br><span class="line">          <span class="title function_">isDef</span>(nestedIndex)</span><br><span class="line">        ) &#123;</span><br><span class="line">          c.<span class="property">key</span> = <span class="string">`__vlist<span class="subst">$&#123;nestedIndex&#125;</span>_<span class="subst">$&#123;i&#125;</span>__`</span></span><br><span class="line">        &#125;</span><br><span class="line">        res.<span class="title function_">push</span>(c)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> res</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure></div></div> 
+
+<p>该函数的主要逻辑就是遍历children数组，获取每一项的数据类型，然后做相应处理。</p>
+<ol>
+<li>如果是未定义&#x2F;null&#x2F;布尔值，直接跳过，不进行处理。</li>
+<li>如果是数组类型，则递归调用normalizeArrayChildren。</li>
+<li>如果是基础类型，则通过 createTextVNode方法转换成 VNode类型。</li>
+<li>如果不是上面三种类型，则表示已经是 VNode类型了。</li>
+</ol>
+<p>需要注意的是在遍历的过程中，对这 3 种情况都做了如下处理：<mark class="tag-plugin colorful mark" color="orange">如果存在两个连续的 text 节点，会把它们合并成一个 text 节点</mark>。</p>
+<h4 id="4-2-2-3-总结"><a href="#4-2-2-3-总结" class="headerlink" title="4.2.2.3 总结"></a>4.2.2.3 总结</h4><p>经过对 children的统一处理，现在 VNode已经是一个规范化的 VNode节点了。</p>
+<h2 id="4-3-VNode的创建"><a href="#4-3-VNode的创建" class="headerlink" title="4.3 VNode的创建"></a>4.3 VNode的创建</h2><p>经过兼容处理和 children规范化处理后，就可以创建VNode了。</p>
+<h3 id="4-3-1-非组件-VNode"><a href="#4-3-1-非组件-VNode" class="headerlink" title="4.3.1 非组件 VNode"></a>4.3.1 非组件 VNode</h3><p>当 tag为字符串，且不是注册组件，则直接调用 VNode来创建 VNode。</p>
+<p>tag是字符串一般有 2 种情况：</p>
+<ol>
+<li>普通的HTML标签</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 模板编译前</span></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">div</span>&gt;</span>Hello World<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span></span><br><span class="line">&lt;/template&gt;</span><br><span class="line"><span class="comment">// 模板编译后</span></span><br><span class="line"><span class="comment">// _v表示createTextVNode 用作创建子节点</span></span><br><span class="line"><span class="title function_">_c</span>(<span class="string">&#x27;div&#x27;</span>,[<span class="title function_">_v</span>(<span class="string">&#x27;Hello World&#x27;</span>)])</span><br></pre></td></tr></table></figure></div></div> 
+
+<ol start="2">
+<li>组件类型</li>
+</ol>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 模板编译前</span></span><br><span class="line">&lt;template&gt;</span><br><span class="line">  <span class="language-xml"><span class="tag">&lt;<span class="name">Component</span> /&gt;</span></span></span><br><span class="line">&lt;/template&gt;</span><br><span class="line"><span class="comment">// 模板编译后</span></span><br><span class="line"><span class="comment">// _v表示createTextVNode 用作创建子节点</span></span><br><span class="line"><span class="title function_">_c</span>(<span class="string">&#x27;Component&#x27;</span>)</span><br></pre></td></tr></table></figure></div></div> 
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/vnode/3.png" data-fancybox="true"/></div></div>
+
+<h3 id="4-3-2-组件-VNode"><a href="#4-3-2-组件-VNode" class="headerlink" title="4.3.2 组件 VNode"></a>4.3.2 组件 VNode</h3><p>当 tag不是字符串或者字符串是注册组件的关键字，则表示需要创建一个组件VNode。此时调用 createComponent来创建组件VNode。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> <span class="keyword">function</span> <span class="title function_">createComponent</span>(<span class="params"></span></span><br><span class="line"><span class="params">  Ctor: <span class="keyword">typeof</span> Component | <span class="built_in">Function</span> | ComponentOptions | <span class="keyword">void</span>,</span></span><br><span class="line"><span class="params">  data: VNodeData | <span class="literal">undefined</span>,</span></span><br><span class="line"><span class="params">  context: Component,</span></span><br><span class="line"><span class="params">  children?: <span class="built_in">Array</span>&lt;VNode&gt;,</span></span><br><span class="line"><span class="params">  tag?: string</span></span><br><span class="line"><span class="params"></span>): <span class="title class_">VNode</span> | <span class="title class_">Array</span>&lt;<span class="title class_">VNode</span>&gt; | <span class="keyword">void</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isUndef</span>(<span class="title class_">Ctor</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> baseCtor = context.<span class="property">$options</span>.<span class="property">_base</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// plain options object: turn it into a constructor</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isObject</span>(<span class="title class_">Ctor</span>)) &#123;</span><br><span class="line">    <span class="title class_">Ctor</span> = baseCtor.<span class="title function_">extend</span>(<span class="title class_">Ctor</span> <span class="keyword">as</span> <span class="keyword">typeof</span> <span class="title class_">Component</span>)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// if at this stage it&#x27;s not a constructor or an async component factory,</span></span><br><span class="line">  <span class="comment">// reject.</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="title class_">Ctor</span> !== <span class="string">&#x27;function&#x27;</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (__DEV__) &#123;</span><br><span class="line">      <span class="title function_">warn</span>(<span class="string">`Invalid Component definition: <span class="subst">$&#123;<span class="built_in">String</span>(Ctor)&#125;</span>`</span>, context)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span></span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// async component</span></span><br><span class="line">  <span class="keyword">let</span> asyncFactory</span><br><span class="line">  <span class="comment">// @ts-expect-error</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isUndef</span>(<span class="title class_">Ctor</span>.<span class="property">cid</span>)) &#123;</span><br><span class="line">    asyncFactory = <span class="title class_">Ctor</span></span><br><span class="line">    <span class="title class_">Ctor</span> = <span class="title function_">resolveAsyncComponent</span>(asyncFactory, baseCtor)</span><br><span class="line">    <span class="keyword">if</span> (<span class="title class_">Ctor</span> === <span class="literal">undefined</span>) &#123;</span><br><span class="line">      <span class="comment">// return a placeholder node for async component, which is rendered</span></span><br><span class="line">      <span class="comment">// as a comment node but preserves all the raw information for the node.</span></span><br><span class="line">      <span class="comment">// the information will be used for async server-rendering and hydration.</span></span><br><span class="line">      <span class="keyword">return</span> <span class="title function_">createAsyncPlaceholder</span>(asyncFactory, data, context, children, tag)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  data = data || &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// resolve constructor options in case global mixins are applied after</span></span><br><span class="line">  <span class="comment">// component constructor creation</span></span><br><span class="line">  <span class="title function_">resolveConstructorOptions</span>(<span class="title class_">Ctor</span> <span class="keyword">as</span> <span class="keyword">typeof</span> <span class="title class_">Component</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// transform component v-model data into props &amp; events</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isDef</span>(data.<span class="property">model</span>)) &#123;</span><br><span class="line">    <span class="comment">// @ts-expect-error</span></span><br><span class="line">    <span class="title function_">transformModel</span>(<span class="title class_">Ctor</span>.<span class="property">options</span>, data)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// extract props</span></span><br><span class="line">  <span class="comment">// @ts-expect-error</span></span><br><span class="line">  <span class="keyword">const</span> propsData = <span class="title function_">extractPropsFromVNodeData</span>(data, <span class="title class_">Ctor</span>, tag)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// functional component</span></span><br><span class="line">  <span class="comment">// @ts-expect-error</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isTrue</span>(<span class="title class_">Ctor</span>.<span class="property">options</span>.<span class="property">functional</span>)) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="title function_">createFunctionalComponent</span>(</span><br><span class="line">      <span class="title class_">Ctor</span> <span class="keyword">as</span> <span class="keyword">typeof</span> <span class="title class_">Component</span>,</span><br><span class="line">      propsData,</span><br><span class="line">      data,</span><br><span class="line">      context,</span><br><span class="line">      children</span><br><span class="line">    )</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// extract listeners, since these needs to be treated as</span></span><br><span class="line">  <span class="comment">// child component listeners instead of DOM listeners</span></span><br><span class="line">  <span class="keyword">const</span> listeners = data.<span class="property">on</span></span><br><span class="line">  <span class="comment">// replace with listeners with .native modifier</span></span><br><span class="line">  <span class="comment">// so it gets processed during parent component patch.</span></span><br><span class="line">  data.<span class="property">on</span> = data.<span class="property">nativeOn</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">// @ts-expect-error</span></span><br><span class="line">  <span class="keyword">if</span> (<span class="title function_">isTrue</span>(<span class="title class_">Ctor</span>.<span class="property">options</span>.<span class="property">abstract</span>)) &#123;</span><br><span class="line">    <span class="comment">// abstract components do not keep anything</span></span><br><span class="line">    <span class="comment">// other than props &amp; listeners &amp; slot</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// work around flow</span></span><br><span class="line">    <span class="keyword">const</span> slot = data.<span class="property">slot</span></span><br><span class="line">    data = &#123;&#125;</span><br><span class="line">    <span class="keyword">if</span> (slot) &#123;</span><br><span class="line">      data.<span class="property">slot</span> = slot</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="comment">// install component management hooks onto the placeholder node</span></span><br><span class="line">  <span class="title function_">installComponentHooks</span>(data)</span><br><span class="line"></span><br><span class="line">  <span class="comment">// return a placeholder vnode</span></span><br><span class="line">  <span class="comment">// @ts-expect-error</span></span><br><span class="line">  <span class="keyword">const</span> name = <span class="title function_">getComponentName</span>(<span class="title class_">Ctor</span>.<span class="property">options</span>) || tag</span><br><span class="line">  <span class="keyword">const</span> vnode = <span class="keyword">new</span> <span class="title class_">VNode</span>(</span><br><span class="line">    <span class="comment">// @ts-expect-error</span></span><br><span class="line">    <span class="string">`vue-component-<span class="subst">$&#123;Ctor.cid&#125;</span><span class="subst">$&#123;name ? <span class="string">`-<span class="subst">$&#123;name&#125;</span>`</span> : <span class="string">&#x27;&#x27;</span>&#125;</span>`</span>,</span><br><span class="line">    data,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    <span class="literal">undefined</span>,</span><br><span class="line">    context,</span><br><span class="line">    <span class="comment">// @ts-expect-error</span></span><br><span class="line">    &#123; <span class="title class_">Ctor</span>, propsData, listeners, tag, children &#125;,</span><br><span class="line">    asyncFactory</span><br><span class="line">  )</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> vnode</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div> 
+
+<p>创建组件 VNode时，会在 VNode新增一些组件特有的属性：</p>
+<ol>
+<li>使用 Vue.extend生成一个子类构造器，会挂载到 VNode的componentsOptions属性的 Ctor上。</li>
+<li>处理异步组件</li>
+<li>处理 model</li>
+<li>注入一些 hooks 等</li>
+</ol>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/vnode/3.png" data-fancybox="true"/></div></div>
+
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/banner/vnode.png" data-fancybox="true"/></div></div>
+
+<h2 id="4-4-createElement函数的优势"><a href="#4-4-createElement函数的优势" class="headerlink" title="4.4 createElement函数的优势"></a>4.4 createElement函数的优势</h2><p>createElement函数的意义在于它提供了一种更方便、更简洁且更具可读性的方式来创建vnode，相比直接编写 VNode 具有以下好处：</p>
+<h3 id="4-4-1-直观的参数形式"><a href="#4-4-1-直观的参数形式" class="headerlink" title="4.4.1 直观的参数形式"></a>4.4.1 直观的参数形式</h3><p>使用createElement函数可以通过直观的参数来描述虚拟节点的属性。</p>
+<p>相比之下，直接编写 VNode 对象时，需要手动构建一个包含多个属性的 JavaScript 对象，可能会导致代码较为冗长和复杂，降低了可读性和可维护性。</p>
+<h3 id="4-4-2-统一的创建方式"><a href="#4-4-2-统一的创建方式" class="headerlink" title="4.4.2 统一的创建方式"></a>4.4.2 统一的创建方式</h3><p>在项目中使用createElement函数可以确保虚拟节点的创建方式一致。</p>
+<p>直接编写 VNode 对象可能会导致不同的开发者采用不同的方式来构建虚拟节点，从而降低了代码的一致性和可维护性。</p>
+<h3 id="4-4-3-动态属性和条件判断"><a href="#4-4-3-动态属性和条件判断" class="headerlink" title="4.4.3 动态属性和条件判断"></a>4.4.3 动态属性和条件判断</h3><p>createElement函数可以接收动态的参数，允许在运行时根据条件来决定虚拟节点的属性。例如，可以根据数据的变化动态地添加或修改属性，或者根据条件判断来决定是否创建某个子节点。</p>
+<p>直接编写 VNode 对象时，要实现类似的动态行为可能需要更多的代码和逻辑处理，增加了代码的复杂性。</p>
+<h1 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h1><p>为了避免重复操作真实 DOM 所带来的性能消耗，vue框架引入了虚拟 DOM。</p>
+<p>虚拟 DOM本质上就是一个具有特有属性的一个 JS对象。</p>
+<p>为了实现创建虚拟 DOM 的一致性，vue提供了一个方法 createElement 用来方便快捷的生成虚拟 DOM。</p>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>如果这篇文章对你有一定启发和帮助。欢迎给予打赏。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"> </p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"></div><div class="item" id="next"><div class="note">较早文章</div><a href="/posts/%E6%89%8B%E5%86%99Object.create.html">手写Object.create</a></div></section></div>
+
+
+
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></p>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E6%B8%B2%E6%9F%93%E5%99%A8%E7%9A%84%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B"><span class="toc-text">一、渲染器的渲染流程</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C-%E7%BC%93%E5%86%B2%E5%B1%82-%E8%99%9A%E6%8B%9FDOM"><span class="toc-text">二. 缓冲层-虚拟DOM</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81-VNode"><span class="toc-text">三、 VNode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-tag%E5%B1%9E%E6%80%A7"><span class="toc-text">3.1 tag属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-2-data%E5%B1%9E%E6%80%A7"><span class="toc-text">3.2 data属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-3-children"><span class="toc-text">3.3 children</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-4-text"><span class="toc-text">3.4 text</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-1-5-elm"><span class="toc-text">3.1.5 elm</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9B%9B-createElement%E5%87%BD%E6%95%B0"><span class="toc-text">四. createElement函数</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#4-1-createElement%E5%9C%A8%E5%BC%80%E5%8F%91%E6%97%B6%E7%9A%84%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-text">4.1 createElement在开发时的使用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-1-webpack%E7%BC%96%E8%AF%91%E6%97%B6%E4%BD%BF%E7%94%A8"><span class="toc-text">4.1.1 webpack编译时使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-1-2-%E7%94%A8%E6%88%B7%E8%87%AA%E5%AE%9A%E4%B9%89render%E6%96%B9%E6%B3%95"><span class="toc-text">4.1.2 用户自定义render方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-2-createElement%E5%87%BD%E6%95%B0%E8%A7%A3%E6%9E%90"><span class="toc-text">4.2 createElement函数解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-1-%E5%AF%B9%E7%AC%AC%E4%BA%8C%E4%B8%AA%E5%8F%82%E6%95%B0%E5%81%9A%E5%85%BC%E5%AE%B9"><span class="toc-text">4.2.1 对第二个参数做兼容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-2-2-%E5%AF%B9children%E7%9A%84%E8%A7%84%E8%8C%83%E5%8C%96"><span class="toc-text">4.2.2 对children的规范化</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-1-simpleNormalizeChildren"><span class="toc-text">4.2.2.1 simpleNormalizeChildren</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-2-normalizeChildren%E9%80%92%E5%BD%92%E5%A4%84%E7%90%86%E5%AD%90%E8%8A%82%E7%82%B9"><span class="toc-text">4.2.2.2 normalizeChildren递归处理子节点</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-2-2-3-%E6%80%BB%E7%BB%93"><span class="toc-text">4.2.2.3 总结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-3-VNode%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="toc-text">4.3 VNode的创建</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-1-%E9%9D%9E%E7%BB%84%E4%BB%B6-VNode"><span class="toc-text">4.3.1 非组件 VNode</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-3-2-%E7%BB%84%E4%BB%B6-VNode"><span class="toc-text">4.3.2 组件 VNode</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-4-createElement%E5%87%BD%E6%95%B0%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-text">4.4 createElement函数的优势</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-1-%E7%9B%B4%E8%A7%82%E7%9A%84%E5%8F%82%E6%95%B0%E5%BD%A2%E5%BC%8F"><span class="toc-text">4.4.1 直观的参数形式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-2-%E7%BB%9F%E4%B8%80%E7%9A%84%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="toc-text">4.4.2 统一的创建方式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-4-3-%E5%8A%A8%E6%80%81%E5%B1%9E%E6%80%A7%E5%92%8C%E6%9D%A1%E4%BB%B6%E5%88%A4%E6%96%AD"><span class="toc-text">4.4.3 动态属性和条件判断</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="toc-text">五、总结</span></a></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>回到顶部</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js`,
+    marked: `https://cdn.jsdelivr.net/npm/marked@13.0.1/lib/marked.umd.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+
+<!-- required -->
+<script src="/js/main.js?v=1.29.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    applyThemeToGiscus(theme)
+  }
+
+  const applyThemeToGiscus = (theme) => {
+    theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    }
+  })()
+</script>
+
+
+<!-- optional -->
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error)';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const els = document.getElementsByClassName('ds-memos');
+    if (els != undefined && els.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
