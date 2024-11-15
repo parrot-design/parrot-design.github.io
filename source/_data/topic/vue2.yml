@@ -1,6 +1,6 @@
 name: 图解Vue2源码 # 在面包屑导航上会显示较短的名字
 title: 图解Vue2源码 # 在列表页会显示完整的专栏标题
-icon: /assets/topic/vue2/vue2.image # 
+icon: /assets/topic/vue2/index.jpeg # 
 description: 分享 Vue2源码 相关内容
 rightbar: 
   - toc

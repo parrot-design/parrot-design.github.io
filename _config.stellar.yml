@@ -12,12 +12,6 @@ site_tree:
   # 主页配置
   home:
     leftbar: introduction
-  # 博客列表页配置
-  index_blog:
-    leftbar: introduction
-  index_category:
-    leftbar:
-      - related 
 # 文章设置
 article:
   # 可以自定义协议内容
