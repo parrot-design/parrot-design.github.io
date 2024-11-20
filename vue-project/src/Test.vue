@@ -1,26 +1,15 @@
 <template>
   <div>
-    <button @click="change">测试</button>
-    <FunctionalList v-if="visible" />
-  </div>
-  
+    {{ msg }}
+  </div> 
 </template>
 
-<script>
-import FunctionalList from './Fun';
+<script> 
 
 export default {
-  components: {
-    FunctionalList
-  },
   data(){
     return {
-      visible:true
-    }
-  },
-  methods:{
-    change:function(){
-      this.visible = !this.visible;
+      msg: "Hello World"
     }
   }
 };

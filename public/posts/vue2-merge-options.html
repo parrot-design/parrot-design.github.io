@@ -20,12 +20,12 @@
   <title>🔥Vue2丰富的选项合并策略 - 宝哥的博客</title>
 
   
-    <meta name="description" content="专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入的选项合并到实例的选项">
+    <meta name="description" content="&nbsp; 返回  专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入">
 <meta property="og:type" content="article">
 <meta property="og:title" content="🔥Vue2丰富的选项合并策略">
 <meta property="og:url" content="http://example.com/posts/vue2-merge-options.html">
 <meta property="og:site_name" content="宝哥的博客">
-<meta property="og:description" content="专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入的选项合并到实例的选项">
+<meta property="og:description" content="&nbsp; 返回  专栏第五篇-丰富的选项合并策略  一、实例化时合并选项在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。 那什么是选项呢？ 在 new Vue(选项)中，Vue构造函数中传入的数据就是选项，代表传入的选项，一般以对象形式传入。 在Vue源码中使用变量options表示选项，在源码中你经常能看到 options的身影。  在实例化时需要将实例对应的构造函数上的选项和传入">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/1.png">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/2.png">
@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/12.png">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/mergeoptions/13.png">
 <meta property="article:published_time" content="2024-11-12T05:55:00.000Z">
-<meta property="article:modified_time" content="2024-11-13T07:10:41.076Z">
+<meta property="article:modified_time" content="2024-11-19T09:57:30.809Z">
 <meta property="article:author" content="Jiabao Wu">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/assets/topic/vue2/mergeoptions/1.png">
@@ -90,7 +90,7 @@
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
 <span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-observe.html">图解Vue2源码</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-12T05:55:00.000Z">2024-11-12</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-13T07:10:41.076Z">2024-11-13</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-12T05:55:00.000Z">2024-11-12</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-19T09:57:30.809Z">2024-11-19</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -101,7 +101,10 @@
     </div>
     
   </div>
-  </div><article class="md-text content"><div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第五篇-丰富的选项合并策略</span><span class="empty"></span></p></div>
+  </div><article class="md-text content"><p>&nbsp;</p>
+<a class="tag-plugin colorful button" color="orange" size="xs" title="返回" href="javascript:window.history.back()"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1732009737250" class="icon" viewBox="0 0 1024 1024" version="1.1" p-id="4481" id="mx_n_1732009737251" width="200" height="200"><path d="M836.843436 316.39502c-68.77027-68.542072-160.195515-106.287745-257.434164-106.287745L166.107155 210.107275 278.930757 97.281627 245.781776 64.132646 76.371388 233.549174 245.781776 402.964678l33.148981-33.148981L166.107155 256.984932l413.301094 0c84.747149 0 164.42177 32.891108 224.341464 92.609211 59.901275 59.700707 92.888574 139.069359 92.888574 223.484957l0 23.414269c0 84.417645-32.987299 163.78425-92.888574 223.484957-59.919694 59.72322-139.588175 92.610234-224.341464 92.610234L109.520369 912.588561l0 46.877657 469.88788 0c97.238648 0 188.663894-37.747719 257.434164-106.283652 68.787666-68.563562 106.672508-159.718655 106.672508-256.69022l0-23.414269C943.515944 476.113675 905.631102 384.952442 836.843436 316.39502L836.843436 316.39502zM836.843436 316.39502" fill="#ffffff" p-id="4482"/></svg><span>返回</span></a>
+
+<div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第五篇-丰富的选项合并策略</span><span class="empty"></span></p></div>
 
 <h1 id="一、实例化时合并选项"><a href="#一、实例化时合并选项" class="headerlink" title="一、实例化时合并选项"></a>一、实例化时合并选项</h1><p>在上一篇文章中执行Vue初始化的时候，我们说到了选项合并。</p>
 <p>那什么是选项呢？</p>

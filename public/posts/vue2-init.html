@@ -20,16 +20,16 @@
   <title>🔥Vue2初始化时都干了什么事 - 宝哥的博客</title>
 
   
-    <meta name="description" content="专栏第四篇-初始化干了什么事  &emsp;&emsp;上一节中我们知道 Vue就是一个构造函数，在使用 Vue的时候需要实例化 Vue，这一章我们就来看看在实例化的时候内部做了一些什么操作。 零、调用了_init方法123456function Vue()&#123;    if(!this instanceof Vue)&#123;        return warn(&quot;必须使用">
+    <meta name="description" content="&nbsp; 返回  专栏第四篇-初始化干了什么事  &emsp;&emsp;上一节中我们知道 Vue就是一个构造函数，在使用 Vue的时候需要实例化 Vue，这一章我们就来看看在实例化的时候内部做了一些什么操作。 零、调用了_init方法123456function Vue()&#123;    if(!this instanceof Vue)&#123;        return warn(">
 <meta property="og:type" content="article">
 <meta property="og:title" content="🔥Vue2初始化时都干了什么事">
 <meta property="og:url" content="http://example.com/posts/vue2-init.html">
 <meta property="og:site_name" content="宝哥的博客">
-<meta property="og:description" content="专栏第四篇-初始化干了什么事  &emsp;&emsp;上一节中我们知道 Vue就是一个构造函数，在使用 Vue的时候需要实例化 Vue，这一章我们就来看看在实例化的时候内部做了一些什么操作。 零、调用了_init方法123456function Vue()&#123;    if(!this instanceof Vue)&#123;        return warn(&quot;必须使用">
+<meta property="og:description" content="&nbsp; 返回  专栏第四篇-初始化干了什么事  &emsp;&emsp;上一节中我们知道 Vue就是一个构造函数，在使用 Vue的时候需要实例化 Vue，这一章我们就来看看在实例化的时候内部做了一些什么操作。 零、调用了_init方法123456function Vue()&#123;    if(!this instanceof Vue)&#123;        return warn(">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://example.com/assets/topic/vue2/banner/init.png">
 <meta property="article:published_time" content="2024-11-12T05:55:00.000Z">
-<meta property="article:modified_time" content="2024-11-13T07:46:41.059Z">
+<meta property="article:modified_time" content="2024-11-19T09:57:35.616Z">
 <meta property="article:author" content="Jiabao Wu">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://example.com/assets/topic/vue2/banner/init.png">
@@ -78,7 +78,7 @@
   <div class="content">
     <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
 <span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-observe.html">图解Vue2源码</a></div>
-<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-12T05:55:00.000Z">2024-11-12</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-13T07:46:41.059Z">2024-11-13</time></span></div></div></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-12T05:55:00.000Z">2024-11-12</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-11-19T09:57:35.616Z">2024-11-19</time></span></div></div></div>
     
     <div class="bottom only-title">
       
@@ -89,7 +89,10 @@
     </div>
     
   </div>
-  </div><article class="md-text content"><div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第四篇-初始化干了什么事</span><span class="empty"></span></p></div>
+  </div><article class="md-text content"><p>&nbsp;</p>
+<a class="tag-plugin colorful button" color="orange" size="xs" title="返回" href="javascript:window.history.back()"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1732009737250" class="icon" viewBox="0 0 1024 1024" version="1.1" p-id="4481" id="mx_n_1732009737251" width="200" height="200"><path d="M836.843436 316.39502c-68.77027-68.542072-160.195515-106.287745-257.434164-106.287745L166.107155 210.107275 278.930757 97.281627 245.781776 64.132646 76.371388 233.549174 245.781776 402.964678l33.148981-33.148981L166.107155 256.984932l413.301094 0c84.747149 0 164.42177 32.891108 224.341464 92.609211 59.901275 59.700707 92.888574 139.069359 92.888574 223.484957l0 23.414269c0 84.417645-32.987299 163.78425-92.888574 223.484957-59.919694 59.72322-139.588175 92.610234-224.341464 92.610234L109.520369 912.588561l0 46.877657 469.88788 0c97.238648 0 188.663894-37.747719 257.434164-106.283652 68.787666-68.563562 106.672508-159.718655 106.672508-256.69022l0-23.414269C943.515944 476.113675 905.631102 384.952442 836.843436 316.39502L836.843436 316.39502zM836.843436 316.39502" fill="#ffffff" p-id="4482"/></svg><span>返回</span></a>
+
+<div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第四篇-初始化干了什么事</span><span class="empty"></span></p></div>
 
 <p>&emsp;&emsp;上一节中我们知道 Vue就是一个构造函数，在使用 Vue的时候需要实例化 Vue，这一章我们就来看看在实例化的时候内部做了一些什么操作。</p>
 <h1 id="零、调用了-init方法"><a href="#零、调用了-init方法" class="headerlink" title="零、调用了_init方法"></a>零、调用了_init方法</h1><div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">function</span> <span class="title function_">Vue</span>(<span class="params"></span>)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!<span class="variable language_">this</span> <span class="keyword">instanceof</span> <span class="title class_">Vue</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="title function_">warn</span>(<span class="string">&quot;必须使用 new 关键字来实例化&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="variable language_">this</span>.<span class="title function_">_init</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div></div>
