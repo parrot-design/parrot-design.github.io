@@ -1,18 +1,21 @@
 <template>
   <div>
-    {{ msg }}
-  </div> 
+    <el-input 
+      @keyup.enter.native="()=>{}"
+      clearable
+    >
+    </el-input>
+  </div>
 </template>
 
-<script> 
-
+<script>
 export default {
-  data(){
+  data() {
     return {
       msg: {
-        msg:"Hello World"
-      }
-    }
-  }
+        msg: "Hello World",
+      },
+    };
+  },
 };
 </script>

@@ -1,15 +1,10 @@
 import Vue from "vue/dist/vue.esm.browser";
+import Test from "./Test.vue"
 // Vue.config.async = false;
 
-new Vue({
-    template:`<div>{{ msg }}</div>`,
-    data(){
-        return {
-            msg:"inited"
-        }
-    },
-    mounted(){
-        this.msg = '第一次渲染'; 
-        this.msg = '第二次渲染'; 
-    }
-}).$mount("#app")
+Vue.component('test1',{
+    template:`<div>hello</div>`
+})
+new Vue(Test).$mount("#app")
+
+console.log("Vue.options==>",Vue.options)
