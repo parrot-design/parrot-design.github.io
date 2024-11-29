@@ -9,7 +9,7 @@
             "request":"launch",
             "url": "http://localhost:3000",
             "type": "chrome", 
-            "webRoot": "${workspaceFolder}/react-project"
+            "webRoot": "${workspaceFolder}/react-project/my-react-core"
         }
     ]
 }
