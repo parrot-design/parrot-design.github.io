@@ -1,0 +1,724 @@
+
+<!DOCTYPE html><html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="hexo-theme" content="https://github.com/xaoxuu/hexo-theme-stellar/tree/1.29.1" theme-name="Stellar" theme-version="1.29.1">
+  
+  <meta name="generator" content="Hexo 7.3.0">
+  <meta http-equiv='x-dns-prefetch-control' content='on' />
+  
+  <meta name="renderer" content="webkit">
+  <meta name="force-rendering" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+  <meta name="HandheldFriendly" content="True" >
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000">
+  <meta name="theme-color" content="#f9fafb">
+  
+  <title>🔥Vue2双端对比 - 宝哥的博客</title>
+
+  
+    <meta name="description" content="&nbsp; 返回  专栏第十篇-双端对比算法  上节我们说到Vue是异步批量更新的，本质上就是调用 watcher的run方法，然后调用实例上的_update方法进行重新渲染。 一、diff算法1.1 前世今生前世：diff 算法最初是由计算机科学家迈克尔·菲舍尔和丹尼尔·希尔伯特所发明的一种 文本比较算法。 今生：伴随着前端开发的蓬勃兴起，diff 算法被引入到虚拟 DOM 当中，成为了一项用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="🔥Vue2双端对比">
+<meta property="og:url" content="http://example.com/posts/vue2-diff.html">
+<meta property="og:site_name" content="宝哥的博客">
+<meta property="og:description" content="&nbsp; 返回  专栏第十篇-双端对比算法  上节我们说到Vue是异步批量更新的，本质上就是调用 watcher的run方法，然后调用实例上的_update方法进行重新渲染。 一、diff算法1.1 前世今生前世：diff 算法最初是由计算机科学家迈克尔·菲舍尔和丹尼尔·希尔伯特所发明的一种 文本比较算法。 今生：伴随着前端开发的蓬勃兴起，diff 算法被引入到虚拟 DOM 当中，成为了一项用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/1.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/2.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/3.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/4.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/5.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/6.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/7.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/8.jpg">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/9.png">
+<meta property="og:image" content="http://example.com/assets/topic/vue2/diff/10.png">
+<meta property="article:published_time" content="2024-11-25T06:27:00.000Z">
+<meta property="article:modified_time" content="2024-12-02T09:42:00.271Z">
+<meta property="article:author" content="Jiabao Wu">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/assets/topic/vue2/diff/1.jpg">
+  
+  
+  
+  
+
+  <!-- feed -->
+  
+
+  <link rel="stylesheet" href="/css/main.css?v=1.29.1">
+
+  
+    <link rel="shortcut icon" href="/assets/ico/favicon.ico">
+  
+
+  
+
+  <link rel="stylesheet" href="/css/extra.css">
+</head>
+<body>
+
+<div class="l_body s:aa content tech" id="start" layout="post" ><aside class="l_left"><div class="leftbar-container">
+
+
+<header class="header"><div class="logo-wrap"><a class="avatar" href="/about/"><div class="bg" style="opacity:0;background-image:url(https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/rainbow64@3x.webp);"></div><img no-lazy class="avatar" src="https://avatars.githubusercontent.com/u/77631518?u=fb7a512e1f331b63c51ddf591548f0fd2d5697ac&v=4&size=64" onerror="javascript:this.classList.add('error');this.src='https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/image/2659360.svg';"></a><a class="title" href="/"><div class="main" ff="title">宝哥的博客</div><div class="sub normal cap">旨在分享这么多年来积累的技术</div><div class="sub hover cap" style="opacity:0"> Share My Code</div></a></div></header>
+
+<div class="nav-area">
+<div class="search-wrapper" id="search-wrapper"><form class="search-form"><a class="search-button" onclick="document.getElementById(&quot;search-input&quot;).focus();"><svg t="1705074644177" viewBox="0 0 1025 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1560" width="200" height="200"><path d="M1008.839137 935.96571L792.364903 719.491476a56.783488 56.783488 0 0 0-80.152866 0 358.53545 358.53545 0 1 1 100.857314-335.166073 362.840335 362.840335 0 0 1-3.689902 170.145468 51.248635 51.248635 0 1 0 99.217358 26.444296 462.057693 462.057693 0 1 0-158.255785 242.303546l185.930047 185.725053a51.248635 51.248635 0 0 0 72.568068 0 51.248635 51.248635 0 0 0 0-72.978056z" p-id="1561"></path><path d="M616.479587 615.969233a50.428657 50.428657 0 0 0-61.498362-5.534852 174.655348 174.655348 0 0 1-177.525271 3.484907 49.403684 49.403684 0 0 0-58.833433 6.76482l-3.074918 2.869923a49.403684 49.403684 0 0 0 8.609771 78.10292 277.767601 277.767601 0 0 0 286.992355-5.739847 49.403684 49.403684 0 0 0 8.404776-76.667958z" p-id="1562"></path></svg></a><input type="text" class="search-input" id="search-input" placeholder="站内搜索"></form><div id="search-result"></div><div class="search-no-result">没有找到内容！</div></div>
+
+
+<nav class="menu dis-select"></nav>
+</div>
+<div class="widgets">
+<widget class="widget-wrapper post-list"><div class="widget-header dis-select"><span class="name">专栏：图解Vue2源码</span></div><div class="widget-body"><a class="item active" href="/posts/vue2-diff.html"><span class="title">🔥Vue2双端对比</span><svg class="active-icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" d="M21 11.098v4.993c0 3.096 0 4.645-.734 5.321c-.35.323-.792.526-1.263.58c-.987.113-2.14-.907-4.445-2.946c-1.02-.901-1.529-1.352-2.118-1.47a2.225 2.225 0 0 0-.88 0c-.59.118-1.099.569-2.118 1.47c-2.305 2.039-3.458 3.059-4.445 2.945a2.238 2.238 0 0 1-1.263-.579C3 20.736 3 19.188 3 16.091v-4.994C3 6.81 3 4.666 4.318 3.333C5.636 2 7.758 2 12 2c4.243 0 6.364 0 7.682 1.332C21 4.665 21 6.81 21 11.098" opacity=".5"/><path fill="currentColor" d="M9 5.25a.75.75 0 0 0 0 1.5h6a.75.75 0 0 0 0-1.5z"/></svg></a><a class="item" href="/posts/vue2-async.html"><span class="title">🔥Vue2异步渲染机制</span></a><a class="item" href="/posts/vue2-observe.html"><span class="title">🔥Vue2数据响应式原理</span></a><a class="item" href="/posts/vue2-init-render.html"><span class="title">🔥Vue2初次渲染流程</span></a><a class="item" href="/posts/vue2-vnode.html"><span class="title">🔥Vue2渲染基础-虚拟DOM</span></a><a class="item" href="/posts/vue2-merge-options.html"><span class="title">🔥Vue2丰富的选项合并策略</span></a><a class="item" href="/posts/vue2-init.html"><span class="title">🔥Vue2初始化时都干了什么事</span></a><a class="item" href="/posts/vue2-constructor.html"><span class="title">🔥Vue2的基本使用和原型设计</span></a><a class="item" href="/posts/vue2-core-build.html"><span class="title">🔥Vue2源码构建</span></a><a class="item" href="/posts/vue2-catalog.html"><span class="title">🔥Vue2目录结构窥探</span></a></div></widget>
+</div>
+<footer class="footer dis-select"><div class="social-wrap"><a class="social" href="javaScript:switchTheme();" rel="noopener noreferrer"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/footer/moon.svg" alt="moon" /></a></div></footer>
+</div></aside><div class="l_main" id="main">
+
+
+
+
+
+<div class="article banner top"><img class="bg lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/async/2.jpg">
+  <div class="content">
+    <div class="top bread-nav footnote"><div class="left"><div class="flex-row" id="breadcrumb"><a class="cap breadcrumb" href="/">主页</a>
+<span class="sep"></span><a class="cap breadcrumb" id="menu" href="/topic">专栏</a><span class="sep"></span><a class="cap breadcrumb" id="proj" href="/posts/vue2-diff.html">图解Vue2源码</a></div>
+<div class="flex-row" id="post-meta"><span class="text created">发布于：<time datetime="2024-11-25T06:27:00.000Z">2024-11-25</time></span><span class="sep updated"></span><span class="text updated">更新于：<time datetime="2024-12-02T09:42:00.271Z">2024-12-02</time></span></div></div></div>
+    
+    <div class="bottom only-title">
+      
+      <div class="text-area">
+        <h1 class="text title"><span>🔥Vue2双端对比</span></h1>
+        
+      </div>
+    </div>
+    
+  </div>
+  </div><article class="md-text content"><p>&nbsp;</p>
+<a class="tag-plugin colorful button" color="orange" size="xs" title="返回" href="javascript:window.history.back()"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" t="1732009737250" class="icon" viewBox="0 0 1024 1024" version="1.1" p-id="4481" id="mx_n_1732009737251" width="200" height="200"><path d="M836.843436 316.39502c-68.77027-68.542072-160.195515-106.287745-257.434164-106.287745L166.107155 210.107275 278.930757 97.281627 245.781776 64.132646 76.371388 233.549174 245.781776 402.964678l33.148981-33.148981L166.107155 256.984932l413.301094 0c84.747149 0 164.42177 32.891108 224.341464 92.609211 59.901275 59.700707 92.888574 139.069359 92.888574 223.484957l0 23.414269c0 84.417645-32.987299 163.78425-92.888574 223.484957-59.919694 59.72322-139.588175 92.610234-224.341464 92.610234L109.520369 912.588561l0 46.877657 469.88788 0c97.238648 0 188.663894-37.747719 257.434164-106.283652 68.787666-68.563562 106.672508-159.718655 106.672508-256.69022l0-23.414269C943.515944 476.113675 905.631102 384.952442 836.843436 316.39502L836.843436 316.39502zM836.843436 316.39502" fill="#ffffff" p-id="4482"/></svg><span>返回</span></a>
+
+<div class="tag-plugin quot"><p class="content" type="text"><span class="empty"></span><span class="text">专栏第十篇-双端对比算法</span><span class="empty"></span></p></div>
+
+<p>上节我们说到Vue是异步批量更新的，本质上就是调用 watcher的run方法，然后调用实例上的_update方法进行重新渲染。</p>
+<h1 id="一、diff算法"><a href="#一、diff算法" class="headerlink" title="一、diff算法"></a>一、diff算法</h1><h2 id="1-1-前世今生"><a href="#1-1-前世今生" class="headerlink" title="1.1 前世今生"></a>1.1 前世今生</h2><p>前世：diff 算法最初是由计算机科学家迈克尔·菲舍尔和丹尼尔·希尔伯特所发明的一种 <u>文本比较算法</u>。</p>
+<p>今生：伴随着前端开发的蓬勃兴起，diff 算法被引入到虚拟 DOM 当中，成为了一项用于高效更新用户界面的核心技术。其旨在高效地辨别出从一种状态转变为另一种状态所需要的最小变更集合。由于在浏览器中对 DOM 进行操作的性能消耗颇为昂贵，例如节点的添加、删除等等，所以 diff 算法能够 <u>尽可能地降低 DOM 的操作数量，避免频繁的 DOM 操作所带来的性能耗费，进而减轻浏览器的性能负担</u>。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/1.jpg" data-fancybox="true"/></div></div>
+
+<p>如上图所示。如果需要将上图中左边的DOM树更新为右边的DOM树，在不采用虚拟DOM的情况下（即无法复用DOM节点），可能需要进行<u>6次DOM操作</u>：</p>
+<ol>
+<li>卸载所有旧子节点，需要 3 次 DOM 删除操作。</li>
+<li>挂载所有新子节点，需要 3 次 DOM 添加操作。</li>
+</ol>
+<p>但是如果采用diff算法复用DOM节点的策略进行的话，实际上只需要进行<u>1次DOM操作</u>：</p>
+<ol>
+<li>移动新的一组子节点的B节点到C节点的后面。</li>
+</ol>
+<p>可以看出来通过复用策略可以有效的避免频繁操作DOM带来的性能开销。</p>
+<h2 id="1-2-diff算法的复杂度"><a href="#1-2-diff算法的复杂度" class="headerlink" title="1.2 diff算法的复杂度"></a>1.2 diff算法的复杂度</h2><p>对两棵树进行 diff 操作，其复杂度为 O(n^3) 。</p>
+<p>这是因为每个节点都需要和另一棵树的所有节点逐一进行对比，这便形成了 n 的复杂度。</p>
+<p>倘若找到有变化的节点，执行插入、删除、修改操作同样具有 n 的复杂度。</p>
+<p>所有的节点均是如此，再乘以 n ，因此得出的复杂度是 O(n * n * n) 。 </p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/2.jpg" data-fancybox="true"/></div></div>
+
+<p>如此的复杂度对于前端框架而言是无法接受的，这意味着若存在 1000 个节点，渲染一次就需要处理 1000 * 1000 * 1000，总计 10 亿次。</p>
+<p>所以前端框架的 diff 约定了两种处理原则：<u>1.只做同层的对比 2.type 变了就不再对比子节点</u>。</p>
+<p>因为 DOM 节点进行跨层级移动的情形相对较少，通常情况下都是同一层级的 DOM 的增删改操作。</p>
+<p>像这样的话，只需遍历一次，对比一下 type 就可以了，其复杂度是 O(n) 。而且一旦 type 发生变化，就不再对比子节点，能够节省下大量节点的遍历工作。另外，由于在虚拟 DOM 中记录了关联的 DOM 节点，执行 DOM 的增删改操作时也无需遍历，其复杂度是 O(1) 。整体的 diff 算法复杂度即为 O(n) 。</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/3.jpg" data-fancybox="true"/></div></div>
+
+<h2 id="1-3-diff算法的核心要素"><a href="#1-3-diff算法的核心要素" class="headerlink" title="1.3 diff算法的核心要素"></a>1.3 diff算法的核心要素</h2><h3 id="1-3-1-同层比较"><a href="#1-3-1-同层比较" class="headerlink" title="1.3.1 同层比较"></a>1.3.1 同层比较</h3><div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/4.jpg" data-fancybox="true"/></div></div>
+
+<p>如上图所示，算法会于两个虚拟 DOM 树的同一层级展开对比，而不会进行跨层级的对比。这代表着它首先会核查每个父节点是否一致，如果一致，接下来才会递归进入子树进行比较。倘若不同，则直接依据具体情况进行更新。</p>
+<p>由之前的章节能够了解到：双端 diff 算法被设计为只有同层节点进行比较，其原因主要有以下两点：</p>
+<ol>
+<li>降低 diff 算法的复杂程度。</li>
+<li>DOM 节点进行跨层级移动的情况相对较少，通常情况下都是同一层级的 DOM 的增删改操作。</li>
+</ol>
+<h3 id="1-3-2-相同节点判断策略"><a href="#1-3-2-相同节点判断策略" class="headerlink" title="1.3.2 相同节点判断策略"></a>1.3.2 相同节点判断策略</h3><div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/5.jpg" data-fancybox="true"/></div></div>
+
+<p>如上图所示。在 Vue 中，判断新旧节点是否为相同节点的逻辑为：当 节点的标签（比如 p 节点） 以及 节点的（key&#x3D;1） 相同时，即被视为同一个节点。之所以这样做，是因为一旦 type 或者 key 发生变化，就不再对比子节点，能够节省下大量节点的遍历工作，从而提升性能。</p>
+<h3 id="1-3-3-循环从两边向中间比较"><a href="#1-3-3-循环从两边向中间比较" class="headerlink" title="1.3.3 循环从两边向中间比较"></a>1.3.3 循环从两边向中间比较</h3><div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/6.jpg" data-fancybox="true"/></div></div>
+
+<p>这是一种优化策略，算法不是线性遍历每一个节点，而是从两端开始，向中间逐步靠拢，这样可以在某些情况下更早地发现差异并终止不必要的比较。</p>
+<ol>
+<li>第一步：比较旧的一组子节点中的第一个子节点A与新的一组子节点中的第一个子节点C。</li>
+<li>第二步：比较旧的一组子节点的最后一个子节点C与旧的一组子节点的最后一个子节点B。</li>
+<li>第三步：比较旧的一组子节点的第一个子节点A与新的一组子节点中的最后一个子节点 B。</li>
+<li>第四步：比较旧的一组子节点的最后一个子节点 C与新的一组子节点的第一个节点C。</li>
+</ol>
+<h3 id="1-3-4-节点复用"><a href="#1-3-4-节点复用" class="headerlink" title="1.3.4 节点复用"></a>1.3.4 节点复用</h3><p>在diff算法中，节点复用是一个非常重要的优化手段。通过复用旧节点，可以大大减少DOM操作，从而提升渲染效率。</p>
+<p>Vue.js团队通过引入key的概念，实现了节点复用的功能。key是一个唯一的标识符，它可以帮助Vue.js区分不同的节点。当新旧节点的key相同时，Vue.js就会复用旧节点，而不是创建新节点。</p>
+<ul>
+<li>在没有key的情况下，判断下面属于同一个节点，直接进行子节点的对比，子节点是文字，则直接更新文字。（这里因为没有key值无法进行复用，复用的话只需要移动A节点的位置即可）。</li>
+</ul>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/7.jpg" data-fancybox="true"/></div></div>
+
+<ul>
+<li>在存在key的情况下，使用双端 diff的四步对比进行。</li>
+</ul>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/8.jpg" data-fancybox="true"/></div></div>
+
+<ol>
+<li>第一步，在有key的情况下，判断不属于同个节点，跳过</li>
+<li>第二步，在有key的情况下，判断不属于同个节点，跳过</li>
+<li>第三步，在有key的情况下，判断属于同个节点，进行节点复用操作（具体操作后续会说）</li>
+</ol>
+<h1 id="二、虚拟-DOM和-diff的关联"><a href="#二、虚拟-DOM和-diff的关联" class="headerlink" title="二、虚拟 DOM和 diff的关联"></a>二、虚拟 DOM和 diff的关联</h1><p>在<a href="/posts/vue2-vnode.html">专栏第六篇</a>中，我们介绍了虚拟DOM。 </p>
+<p>我们知道虚拟DOM是一种可以表示DOM的抽象层面的树形结构，它可以高效地更新到实际的DOM上。</p>
+<p>在Vue中，每个组件都有一个对应的渲染函数，这个函数返回一个描述该组件视图的虚拟节点树。</p>
+<p>在初次渲染时，会调用渲染函数生成一个虚拟节点树。</p>
+<p>当组件的状态发生变化时，渲染函数会被再次调用，产生一个新的虚拟节点树。</p>
+<p>Vue的diff算法就是用来比较新旧虚拟节点树的差异，找出最小的DOM操作来更新实际的DOM。</p>
+<p>所以 Vue的 diff只会发生在更新阶段。初次挂载直接创建并挂载节点。</p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 假设有一个简单的组件</span></span><br><span class="line"><span class="keyword">let</span> component = &#123;</span><br><span class="line">  <span class="attr">data</span>: <span class="string">&#x27;Hello, Vue!&#x27;</span>,</span><br><span class="line">  <span class="attr">template</span>: <span class="string">`&lt;div&gt;&#123;&#123; data &#125;&#125;&lt;/div&gt;`</span></span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 首次渲染，生成虚拟DOM</span></span><br><span class="line"><span class="keyword">let</span> oldVnode = <span class="title class_">Vue</span>.<span class="title function_">render</span>(component);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 假设数据（data）更新，产生新的虚拟DOM</span></span><br><span class="line"><span class="keyword">let</span> newVnode = <span class="title class_">Vue</span>.<span class="title function_">render</span>(component);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// Vue的diff算法比较新旧虚拟DOM</span></span><br><span class="line"><span class="keyword">let</span> patches = <span class="title class_">Vue</span>.<span class="title function_">diff</span>(oldVnode, newVnode);</span><br><span class="line"> </span><br><span class="line"><span class="comment">// 根据diff结果应用到实际DOM</span></span><br><span class="line"><span class="title class_">Vue</span>.<span class="title function_">patch</span>(<span class="variable language_">document</span>.<span class="property">body</span>, patches);</span><br></pre></td></tr></table></figure></div></div>
+
+<p>在这个例子中，Vue首次渲染组件时生成了一个虚拟DOM节点（oldVnode）。当组件的数据更新时，Vue再次渲染组件，生成了一个新的虚拟DOM节点（newVnode）。Vue的diff算法会比较这两个虚拟节点，找出需要执行的最小DOM操作（patches），最后这些DOM操作会被应用到实际的DOM上，以此来更新视图。</p>
+<h1 id="三、-snabbdom简介"><a href="#三、-snabbdom简介" class="headerlink" title="三、 snabbdom简介"></a>三、 snabbdom简介</h1><p>Snabbdom是瑞典语单词，原意为”速度“。是一个轻量级的虚拟DOM和DOM diff算法库，它被设计用于以非常高效的方式更新真实DOM。Vue.js在2.x版本中采用了虚拟DOM的概念来提高其性能和效率，而Vue 2.x内部使用的虚拟DOM实现实际上是在Snabbdom的基础上进行了一些定制和改造的。</p>
+<p>Vue团队选择Snabbdom作为其虚拟DOM实现的原因主要是因为Snabbdom的高性能特性和小巧的体积。它提供了一个简洁的API来创建和管理虚拟节点（vnodes），并通过高效的diff算法来计算出虚拟DOM树的最小变更集，进而只对实际DOM进行必要的更新，减少了不必要的DOM操作，提高了页面的渲染效率。</p>
+<p>vue2源码中更新基本和snabbdom中一致，部分边角细节不一致，所以我们看一下snabbdom源码大致就可以了解Vue更新的细节。</p>
+<p>github地址：<a target="_blank" rel="noopener" href="https://github.com/snabbdom/snabbdom">https://github.com/snabbdom/snabbdom</a></p>
+<div class="tag-plugin colorful note" color="purple" child="codeblock"><div class="body"><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123;</span><br><span class="line">  init,</span><br><span class="line">  h</span><br><span class="line">&#125; <span class="keyword">from</span> <span class="string">&quot;snabbdom&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用 init生成 patch渲染函数</span></span><br><span class="line"><span class="keyword">const</span> patch = <span class="title function_">init</span>([]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> container = <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&quot;container&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> myVnode = <span class="title function_">h</span>(<span class="string">&#x27;div&#x27;</span>,[</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;苹果&#x27;</span>),</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;香蕉&#x27;</span>),</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;火龙果&#x27;</span>),</span><br><span class="line">]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> myVnode2 = <span class="title function_">h</span>(<span class="string">&#x27;div&#x27;</span>,[</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;苹果&#x27;</span>),</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;香蕉&#x27;</span>),</span><br><span class="line">    <span class="title function_">h</span>(<span class="string">&#x27;p&#x27;</span>,<span class="string">&#x27;桃子&#x27;</span>),</span><br><span class="line">])</span><br><span class="line"></span><br><span class="line"><span class="comment">// 第一个参数为 DOM节点</span></span><br><span class="line"><span class="comment">// 第二个参数为 VNODE节点</span></span><br><span class="line"><span class="comment">// 表示第一次执行挂载操作</span></span><br><span class="line"><span class="title function_">patch</span>(container, myVnode);</span><br><span class="line"></span><br><span class="line"><span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;btn&#x27;</span>).<span class="title function_">addEventListener</span>(<span class="string">&#x27;click&#x27;</span>,<span class="function">()=&gt;</span>&#123;</span><br><span class="line">    <span class="comment">// 第一个参数为 DOM节点</span></span><br><span class="line">    <span class="comment">// 第二个参数为 VNODE节点</span></span><br><span class="line">    <span class="comment">// 表示执行更新操作</span></span><br><span class="line">    <span class="title function_">patch</span>(myVnode, myVnode2);</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure></div></div>
+
+<p>界面上渲染效果如下所示：</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/9.png" data-fancybox="true"/></div></div>
+
+<p>点击按钮后：</p>
+<div class="tag-plugin image"><div class="image-bg"><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/topic/vue2/diff/10.png" data-fancybox="true"/></div></div>
+
+<p>由之前的diff算法可知，当点击更新以后，界面上会复用前两个元素苹果和香蕉(即没有销毁以及重新创建)，那么如何证明它复用了呢，其实很简单，<u>只需要在浏览器中手动更改前2个元素，如果点击更新以后，更改的前2个元素没有变化，即可证明它并对dom节点进行了复用</u>。</p>
+<p>如上代码所示，patch即为vue中的第一次渲染，点击按钮更新新的vnode相当于vue中的更新渲染，只不过vue中将行为进行了一些封装。所以掌握snabbdom即可掌握vue2的核心双端diff算法。</p>
+
+<div class="article-footer fs14">
+    <section id="license">
+      <div class="header"><span>许可协议</span></div>
+      <div class="body"><p>如果这篇文章对你有一定启发和帮助。欢迎给予打赏。</p>
+<p><img class="lazy" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAADhlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAAqACAAQAAAABAAAAAaADAAQAAAABAAAAAQAAAADa6r/EAAAAC0lEQVQIHWNgAAIAAAUAAY27m/MAAAAASUVORK5CYII=" data-src="/assets/author/wechat-money.jpg"> </p>
+</div>
+    </section>
+    </div>
+</article>
+<div class="related-wrap" id="read-next"><section class="body"><div class="item" id="prev"><div class="note">较新文章</div><a href="/posts/vue2-async.html">🔥Vue2异步渲染机制</a></div><div class="item" id="next"><div class="note">较早文章</div><a href="/posts/vue2-observe.html">🔥Vue2数据响应式原理</a></div></section></div>
+
+
+
+
+  <div class="related-wrap md-text" id="comments">
+    <section class='header cmt-title cap theme'>
+      <p>快来参与讨论吧~</p>
+
+    </section>
+    <section class='body cmt-body giscus'>
+      
+
+<svg class="loading" style="vertical-align:middle;fill:currentColor;overflow:hidden;" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2709"><path d="M832 512c0-176-144-320-320-320V128c211.2 0 384 172.8 384 384h-64zM192 512c0 176 144 320 320 320v64C300.8 896 128 723.2 128 512h64z" p-id="2710"></path></svg>
+
+<div id="giscus" src="https://giscus.app/client.js" data-repo="parrot-designa/parrot-designa.github.io" data-repo-id="R_kgDONLw8pw" data-category="Announcements" data-category-id="DIC_kwDONLw8p84CkgRe" data-mapping="pathname" data-strict="0" data-reactions-enabled="1" data-emit-metadata="0" data-input-position="bottom" data-theme="preferred_color_scheme" data-lang="zh-CN" crossorigin="anonymous"></div>
+
+    </section>
+  </div>
+
+
+
+<footer class="page-footer footnote"><hr><div class="text"><p><span id="busuanzi_container_site_pv">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span></p>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+</div></footer>
+<div class="main-mask" onclick="sidebar.dismiss()"></div></div><aside class="l_right">
+<div class="widgets">
+
+<widget class="widget-wrapper toc" id="data-toc" collapse="false"><div class="widget-header dis-select"><span class="name">本文目录</span><a class="cap-action" onclick="sidebar.toggleTOC()" ><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg></a></div><div class="widget-body"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81diff%E7%AE%97%E6%B3%95"><span class="toc-text">一、diff算法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-1-%E5%89%8D%E4%B8%96%E4%BB%8A%E7%94%9F"><span class="toc-text">1.1 前世今生</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-2-diff%E7%AE%97%E6%B3%95%E7%9A%84%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="toc-text">1.2 diff算法的复杂度</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#1-3-diff%E7%AE%97%E6%B3%95%E7%9A%84%E6%A0%B8%E5%BF%83%E8%A6%81%E7%B4%A0"><span class="toc-text">1.3 diff算法的核心要素</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-1-%E5%90%8C%E5%B1%82%E6%AF%94%E8%BE%83"><span class="toc-text">1.3.1 同层比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-2-%E7%9B%B8%E5%90%8C%E8%8A%82%E7%82%B9%E5%88%A4%E6%96%AD%E7%AD%96%E7%95%A5"><span class="toc-text">1.3.2 相同节点判断策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-3-%E5%BE%AA%E7%8E%AF%E4%BB%8E%E4%B8%A4%E8%BE%B9%E5%90%91%E4%B8%AD%E9%97%B4%E6%AF%94%E8%BE%83"><span class="toc-text">1.3.3 循环从两边向中间比较</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#1-3-4-%E8%8A%82%E7%82%B9%E5%A4%8D%E7%94%A8"><span class="toc-text">1.3.4 节点复用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E3%80%81%E8%99%9A%E6%8B%9F-DOM%E5%92%8C-diff%E7%9A%84%E5%85%B3%E8%81%94"><span class="toc-text">二、虚拟 DOM和 diff的关联</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%89%E3%80%81-snabbdom%E7%AE%80%E4%BB%8B"><span class="toc-text">三、 snabbdom简介</span></a></li></ol></div><div class="widget-footer">
+
+<a class="top" onclick="util.scrollTop()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 12c0-4.714 0-7.071 1.464-8.536C4.93 2 7.286 2 12 2c4.714 0 7.071 0 8.535 1.464C22 4.93 22 7.286 22 12c0 4.714 0 7.071-1.465 8.535C19.072 22 16.714 22 12 22s-7.071 0-8.536-1.465C2 19.072 2 16.714 2 12Z"/><path stroke-linecap="round" stroke-linejoin="round" d="m9 15.5l3-3l3 3m-6-4l3-3l3 3"/></g></svg><span>回到顶部</span></a><a class="buttom" onclick="util.scrollComment()"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="currentColor" fill-rule="evenodd" d="M10.46 1.25h3.08c1.603 0 2.86 0 3.864.095c1.023.098 1.861.3 2.6.752a5.75 5.75 0 0 1 1.899 1.899c.452.738.654 1.577.752 2.6c.095 1.004.095 2.261.095 3.865v1.067c0 1.141 0 2.036-.05 2.759c-.05.735-.153 1.347-.388 1.913a5.75 5.75 0 0 1-3.112 3.112c-.805.334-1.721.408-2.977.43a10.81 10.81 0 0 0-.929.036c-.198.022-.275.054-.32.08c-.047.028-.112.078-.224.232c-.121.166-.258.396-.476.764l-.542.916c-.773 1.307-2.69 1.307-3.464 0l-.542-.916a10.605 10.605 0 0 0-.476-.764c-.112-.154-.177-.204-.224-.232c-.045-.026-.122-.058-.32-.08c-.212-.023-.49-.03-.93-.037c-1.255-.021-2.171-.095-2.976-.429A5.75 5.75 0 0 1 1.688 16.2c-.235-.566-.338-1.178-.389-1.913c-.049-.723-.049-1.618-.049-2.76v-1.066c0-1.604 0-2.86.095-3.865c.098-1.023.3-1.862.752-2.6a5.75 5.75 0 0 1 1.899-1.899c.738-.452 1.577-.654 2.6-.752C7.6 1.25 8.857 1.25 10.461 1.25M6.739 2.839c-.914.087-1.495.253-1.959.537A4.25 4.25 0 0 0 3.376 4.78c-.284.464-.45 1.045-.537 1.96c-.088.924-.089 2.11-.089 3.761v1c0 1.175 0 2.019.046 2.685c.045.659.131 1.089.278 1.441a4.25 4.25 0 0 0 2.3 2.3c.515.214 1.173.294 2.429.316h.031c.398.007.747.013 1.037.045c.311.035.616.104.909.274c.29.17.5.395.682.645c.169.232.342.525.538.856l.559.944a.52.52 0 0 0 .882 0l.559-.944c.196-.331.37-.624.538-.856c.182-.25.392-.476.682-.645c.293-.17.598-.24.909-.274c.29-.032.639-.038 1.037-.045h.032c1.255-.022 1.913-.102 2.428-.316a4.25 4.25 0 0 0 2.3-2.3c.147-.352.233-.782.278-1.441c.046-.666.046-1.51.046-2.685v-1c0-1.651 0-2.837-.089-3.762c-.087-.914-.253-1.495-.537-1.959a4.25 4.25 0 0 0-1.403-1.403c-.464-.284-1.045-.45-1.96-.537c-.924-.088-2.11-.089-3.761-.089h-3c-1.651 0-2.837 0-3.762.089" clip-rule="evenodd"/><path fill="currentColor" d="M9 11a1 1 0 1 1-2 0a1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0a1 1 0 0 1 2 0m4 0a1 1 0 1 1-2 0a1 1 0 0 1 2 0"/></svg><span>参与讨论</span></a></div></widget>
+</div></aside><div class='float-panel blur'>
+  <button type='button' style='display:none' class='laptop-only rightbar-toggle mobile' onclick='sidebar.rightbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6h11m-11 6h11m-11 6h11M4 6h1v4m-1 0h2m0 8H4c0-1 2-2 2-3s-1-1.5-2-1"/></svg>
+  </button>
+  <button type='button' style='display:none' class='mobile-only leftbar-toggle mobile' onclick='sidebar.leftbar()'>
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-width="1.5"><path d="M2 11c0-3.771 0-5.657 1.172-6.828C4.343 3 6.229 3 10 3h4c3.771 0 5.657 0 6.828 1.172C22 5.343 22 7.229 22 11v2c0 3.771 0 5.657-1.172 6.828C19.657 21 17.771 21 14 21h-4c-3.771 0-5.657 0-6.828-1.172C2 18.657 2 16.771 2 13z"/><path id="sep" stroke-linecap="round" d="M5.5 10h6m-5 4h4m4.5 7V3"/></g></svg>
+  </button>
+</div>
+</div><div class="scripts">
+<script type="text/javascript">
+  const ctx = {
+    date_suffix: {
+      just: `刚刚`,
+      min: `分钟前`,
+      hour: `小时前`,
+      day: `天前`,
+    },
+    root : `/`,
+  };
+
+  // required plugins (only load if needs)
+  if (`local_search`) {
+    ctx.search = {};
+    ctx.search.service = `local_search`;
+    if (ctx.search.service == 'local_search') {
+      let service_obj = Object.assign({}, `{"field":"all","path":"/search.json","content":true,"sort":"-date"}`);
+      ctx.search[ctx.search.service] = service_obj;
+    }
+  }
+  const def = {
+    avatar: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/avatar/round/3442075.svg`,
+    cover: `https://gcore.jsdelivr.net/gh/cdn-x/placeholder@1.0.12/cover/76b86c0226ffd.svg`,
+  };
+  const deps = {
+    jquery: `https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js`,
+    marked: `https://cdn.jsdelivr.net/npm/marked@13.0.1/lib/marked.umd.min.js`
+  }
+  
+
+</script>
+
+<script type="text/javascript">
+  const utils = {
+    // 懒加载 css https://github.com/filamentgroup/loadCSS
+    css: (href, before, media, attributes) => {
+      var doc = window.document;
+      var ss = doc.createElement("link");
+      var ref;
+      if (before) {
+        ref = before;
+      } else {
+        var refs = (doc.body || doc.getElementsByTagName("head")[0]).childNodes;
+        ref = refs[refs.length - 1];
+      }
+      var sheets = doc.styleSheets;
+      if (attributes) {
+        for (var attributeName in attributes) {
+          if (attributes.hasOwnProperty(attributeName)) {
+            ss.setAttribute(attributeName, attributes[attributeName]);
+          }
+        }
+      }
+      ss.rel = "stylesheet";
+      ss.href = href;
+      ss.media = "only x";
+      function ready(cb) {
+        if (doc.body) {
+          return cb();
+        }
+        setTimeout(function () {
+          ready(cb);
+        });
+      }
+      ready(function () {
+        ref.parentNode.insertBefore(ss, before ? ref : ref.nextSibling);
+      });
+      var onloadcssdefined = function (cb) {
+        var resolvedHref = ss.href;
+        var i = sheets.length;
+        while (i--) {
+          if (sheets[i].href === resolvedHref) {
+            return cb();
+          }
+        }
+        setTimeout(function () {
+          onloadcssdefined(cb);
+        });
+      };
+      function loadCB() {
+        if (ss.addEventListener) {
+          ss.removeEventListener("load", loadCB);
+        }
+        ss.media = media || "all";
+      }
+      if (ss.addEventListener) {
+        ss.addEventListener("load", loadCB);
+      }
+      ss.onloadcssdefined = onloadcssdefined;
+      onloadcssdefined(loadCB);
+      return ss;
+    },
+
+    js: (src, opt) => new Promise((resolve, reject) => {
+      var script = document.createElement('script');
+      if (src.startsWith('/')){
+        src = ctx.root + src.substring(1);
+      }
+      script.src = src;
+      if (opt) {
+        for (let key of Object.keys(opt)) {
+          script[key] = opt[key]
+        }
+      } else {
+        // 默认异步，如果需要同步，第二个参数传入 {} 即可
+        script.async = true
+      }
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    }),
+
+    jq: (fn) => {
+      if (typeof jQuery === 'undefined') {
+        utils.js(deps.jquery).then(fn)
+      } else {
+        fn()
+      }
+    },
+    
+    onLoading: (el) => {
+      if (el) {
+        $(el).append('<div class="loading-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" stroke-opacity=".3" d="M12 3C16.9706 3 21 7.02944 21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="1.3s" values="60;0"/></path><path stroke-dasharray="15" stroke-dashoffset="15" d="M12 3C16.9706 3 21 7.02944 21 12"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.3s" values="15;0"/><animateTransform attributeName="transform" dur="1.5s" repeatCount="indefinite" type="rotate" values="0 12 12;360 12 12"/></path></g></svg></div>');
+      }
+    },
+    onLoadSuccess: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap').remove();
+      }
+    },
+    onLoadFailure: (el) => {
+      if (el) {
+        $(el).find('.loading-wrap svg').remove();
+        $(el).find('.loading-wrap').append('<svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path stroke-dasharray="60" stroke-dashoffset="60" d="M12 3L21 20H3L12 3Z"><animate fill="freeze" attributeName="stroke-dashoffset" dur="0.5s" values="60;0"/></path><path stroke-dasharray="6" stroke-dashoffset="6" d="M12 10V14"><animate fill="freeze" attributeName="stroke-dashoffset" begin="0.6s" dur="0.2s" values="6;0"/></path></g><circle cx="12" cy="17" r="1" fill="currentColor" fill-opacity="0"><animate fill="freeze" attributeName="fill-opacity" begin="0.8s" dur="0.4s" values="0;1"/></circle></svg>');
+        $(el).find('.loading-wrap').addClass('error');
+      }
+    },
+    request: (el, url, callback, onFailure) => {
+      let retryTimes = 3;
+      utils.onLoading(el);
+      function req() {
+        return new Promise((resolve, reject) => {
+          let status = 0; // 0 等待 1 完成 2 超时
+          let timer = setTimeout(() => {
+            if (status === 0) {
+              status = 2;
+              timer = null;
+              reject('请求超时');
+              if (retryTimes == 0) {
+                onFailure();
+              }
+            }
+          }, 5000);
+          fetch(url).then(function(response) {
+            if (status !== 2) {
+              clearTimeout(timer);
+              resolve(response);
+              timer = null;
+              status = 1;
+            }
+            if (response.ok) {
+              return response.json();
+            }
+            throw new Error('Network response was not ok.');
+          }).then(function(data) {
+            retryTimes = 0;
+            utils.onLoadSuccess(el);
+            callback(data);
+          }).catch(function(error) {
+            if (retryTimes > 0) {
+              retryTimes -= 1;
+              setTimeout(() => {
+                req();
+              }, 5000);
+            } else {
+              utils.onLoadFailure(el);
+              onFailure();
+            }
+          });
+        });
+      }
+      req();
+    },
+  };
+</script>
+
+<script>
+  const sidebar = {
+    leftbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    rightbar: () => {
+      if (l_body) {
+        l_body.toggleAttribute('rightbar');
+        l_body.removeAttribute('leftbar');
+      }
+    },
+    dismiss: () => {
+      if (l_body) {
+        l_body.removeAttribute('leftbar');
+        l_body.removeAttribute('rightbar');
+      }
+    },
+    toggleTOC: () => {
+      document.querySelector('#data-toc').classList.toggle('collapse');
+    }
+  }
+</script>
+<script type="text/javascript">
+  (() => {
+    const tagSwitchers = document.querySelectorAll('.tag-subtree.parent-tag > a > .tag-switcher-wrapper')
+    for (const tagSwitcher of tagSwitchers) {
+      tagSwitcher.addEventListener('click', (e) => {
+        const parent = e.target.closest('.tag-subtree.parent-tag')
+        parent.classList.toggle('expanded')
+        e.preventDefault()
+      })
+    }
+
+    // Get active tag from query string, then activate it.
+    const urlParams = new URLSearchParams(window.location.search)
+    const activeTag = urlParams.get('tag')
+    if (activeTag) {
+      let tag = document.querySelector(`.tag-subtree[data-tag="${activeTag}"]`)
+      if (tag) {
+        tag.querySelector('a').classList.add('active')
+        
+        while (tag) {
+          tag.classList.add('expanded')
+          tag = tag.parentElement.closest('.tag-subtree.parent-tag')
+        }
+      }
+    }
+  })()
+</script>
+
+
+<!-- required -->
+<script src="/js/main.js?v=1.29.1" defer></script>
+
+<script type="text/javascript">
+  const applyTheme = (theme) => {
+    if (theme === 'auto') {
+      document.documentElement.removeAttribute('data-theme')
+    } else {
+      document.documentElement.setAttribute('data-theme', theme)
+    }
+
+    applyThemeToGiscus(theme)
+  }
+
+  const applyThemeToGiscus = (theme) => {
+    theme = theme === 'auto' ? 'preferred_color_scheme' : theme
+
+    const cmt = document.getElementById('giscus')
+    if (cmt) {
+      // This works before giscus load.
+      cmt.setAttribute('data-theme', theme)
+    }
+
+    const iframe = document.querySelector('#comments > section.giscus > iframe')
+    if (iframe) {
+      // This works after giscus loaded.
+      const src = iframe.src
+      const newSrc = src.replace(/theme=[\w]+/, `theme=${theme}`)
+      iframe.src = newSrc
+    }
+  }
+
+  const switchTheme = () => {
+    // light -> dark -> auto -> light -> ...
+    const currentTheme = document.documentElement.getAttribute('data-theme')
+    let newTheme;
+    switch (currentTheme) {
+      case 'light':
+        newTheme = 'dark'
+        break
+      case 'dark':
+        newTheme = 'auto'
+        break
+      default:
+        newTheme = 'light'
+    }
+    applyTheme(newTheme)
+    window.localStorage.setItem('Stellar.theme', newTheme)
+
+    const messages = {
+      light: `切换到浅色模式`,
+      dark: `切换到深色模式`,
+      auto: `切换到跟随系统配色`,
+    }
+    hud?.toast?.(messages[newTheme])
+  }
+
+  (() => {
+    // Apply user's preferred theme, if any.
+    const theme = window.localStorage.getItem('Stellar.theme')
+    if (theme !== null) {
+      applyTheme(theme)
+    }
+  })()
+</script>
+
+
+<!-- optional -->
+
+  <script type="module">
+  const el = document.querySelector('#comments #giscus');
+  util.viewportLazyload(el, load_discus, false);
+
+  function load_discus() {
+    if (!el) return;
+    try {
+        el.innerHTML = '';
+      } catch (error) {
+        console.error(error);
+      }
+      const script = document.createElement('script');
+      script.async = true;
+      for (const key of Object.keys(el.attributes)) {
+        const attr = el.attributes[key];
+        if (['class', 'id'].includes(attr.name) === false) {
+          script.setAttribute(attr.name, attr.value);
+        }
+      }
+      el.appendChild(script);
+  }
+</script>
+
+
+
+
+<script defer>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.services = Object.assign({}, JSON.parse(`{"mdrender":{"js":"/js/services/mdrender.js"},"siteinfo":{"js":"/js/services/siteinfo.js","api":null},"ghinfo":{"js":"/js/services/ghinfo.js"},"sites":{"js":"/js/services/sites.js"},"friends":{"js":"/js/services/friends.js"},"timeline":{"js":"/js/services/timeline.js"},"fcircle":{"js":"/js/services/fcircle.js"},"weibo":{"js":"/js/services/weibo.js"},"memos":{"js":"/js/services/memos.js"}}`));
+    for (let id of Object.keys(ctx.services)) {
+      const js = ctx.services[id].js;
+      if (id == 'siteinfo') {
+        ctx.cardlinks = document.querySelectorAll('a.link-card[cardlink]');
+        if (ctx.cardlinks?.length > 0) {
+          utils.js(js, { defer: true }).then(function () {
+            setCardLink(ctx.cardlinks);
+          });
+        }
+      } else {
+        const els = document.getElementsByClassName(`ds-${id}`);
+        if (els?.length > 0) {
+          utils.jq(() => {
+            if (id == 'timeline' || 'memos' || 'marked') {
+              utils.js(deps.marked).then(function () {
+                utils.js(js, { defer: true });
+              });
+            } else {
+              utils.js(js, { defer: true });
+            }
+          });
+        }
+      }
+    }
+  });
+</script>
+
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    ctx.search = {
+      path: `/search.json`,
+    }
+    utils.js('/js/search/local-search.js', { defer: true });
+  });
+</script><script>
+  window.FPConfig = {
+    delay: 0,
+    ignoreKeywords: [],
+    maxRPS: 5,
+    hoverDelay: 25
+  };
+</script>
+<script defer src="https://cdn.jsdelivr.net/npm/flying-pages@2/flying-pages.min.js"></script><script defer src="https://cdn.jsdelivr.net/npm/vanilla-lazyload@19.1.3/dist/lazyload.min.js"></script>
+<script>
+  // https://www.npmjs.com/package/vanilla-lazyload
+  // Set the options globally
+  // to make LazyLoad self-initialize
+  window.lazyLoadOptions = {
+    elements_selector: ".lazy",
+  };
+  // Listen to the initialization event
+  // and get the instance of LazyLoad
+  window.addEventListener(
+    "LazyLoad::Initialized",
+    function (event) {
+      window.lazyLoadInstance = event.detail.instance;
+    },
+    false
+  );
+  document.addEventListener('DOMContentLoaded', function () {
+    window.lazyLoadInstance?.update();
+  });
+</script><script>
+  ctx.fancybox = {
+    selector: `.timenode p>img`,
+    css: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css`,
+    js: `https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js`
+  };
+  var selector = '[data-fancybox]:not(.error)';
+  if (ctx.fancybox.selector) {
+    selector += `, ${ctx.fancybox.selector}`
+  }
+  var needFancybox = document.querySelectorAll(selector).length !== 0;
+  if (!needFancybox) {
+    const els = document.getElementsByClassName('ds-memos');
+    if (els != undefined && els.length > 0) {
+      needFancybox = true;
+    }
+  }
+  if (needFancybox) {
+    utils.css(ctx.fancybox.css);
+    utils.js(ctx.fancybox.js, { defer: true }).then(function () {
+      Fancybox.bind(selector, {
+        hideScrollbar: false,
+        Thumbs: {
+          autoStart: false,
+        },
+        caption: (fancybox, slide) => {
+          return slide.triggerEl.alt || slide.triggerEl.dataset.caption || null
+        }
+      });
+    })
+  }
+</script>
+<script>
+  window.addEventListener('DOMContentLoaded', (event) => {
+    const swiper_api = document.getElementById('swiper-api');
+    if (swiper_api != undefined) {
+      utils.css(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.css`);
+      utils.js(`https://unpkg.com/swiper@10.3.1/swiper-bundle.min.js`, { defer: true }).then(function () {
+        const effect = swiper_api.getAttribute('effect') || '';
+        var swiper = new Swiper('.swiper#swiper-api', {
+          slidesPerView: 'auto',
+          spaceBetween: 8,
+          centeredSlides: true,
+          effect: effect,
+          rewind: true,
+          pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+          },
+          navigation: {
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          },
+        });
+      })
+    }
+  });
+</script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    window.codeElements = document.querySelectorAll('.code');
+    if (window.codeElements.length > 0) {
+      ctx.copycode = {
+        default_text: `Copy`,
+        success_text: `Copied`,
+        toast: `复制成功`,
+      };
+      utils.js('/js/plugins/copycode.js');
+    }
+  });
+</script>
+
+
+<!-- inject -->
+
+</div></body></html>
