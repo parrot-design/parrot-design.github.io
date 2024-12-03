@@ -1,10 +1,8 @@
 <template>
   <div>
-    <el-input 
-      @keyup.enter.native="()=>{}"
-      clearable
-    >
-    </el-input>
+    <!-- 根据 textContent 的值渲染内容 -->
+    <div v-if="textContent">{{ textContent }}</div>
+    <button @click="clearText">clearText</button>
   </div>
 </template>
 
@@ -12,10 +10,14 @@
 export default {
   data() {
     return {
-      msg: {
-        msg: "Hello World",
-      },
+      textContent: 'Hello, world!', // 初始为包含文本
     };
   },
+  methods: {
+    clearText() {
+      // 将 textContent 清空
+      this.textContent = '';
+    }
+  }
 };
 </script>
