@@ -5,6 +5,12 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name":"Launch Tapable",
+            "request": "launch",
+            "program": "${workspaceFolder}/tapable-project/index.js",
+            "type": "pwa-node"
+        },
+        {
             "name": "Launch Chrome",
             "request":"launch",
             "url": "http://localhost:3000",

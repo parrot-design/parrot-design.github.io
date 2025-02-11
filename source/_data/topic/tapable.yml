@@ -1,0 +1,9 @@
+name: 图解Tapable.js源码 # 在面包屑导航上会显示较短的名字
+title: 图解Tapable.js源码 # 在列表页会显示完整的专栏标题
+icon: /assets/topic/tapable/index.png # 
+description: 分享 tapable.js 源码 相关内容
+rightbar: 
+  - toc
+order_by: -date # 默认是按发布日期倒序排序
+leftbar:
+  - related
